@@ -132,7 +132,7 @@
       filesData.forEach(file => {
         const div = document.createElement('div');
         div.className = 'thumb';
-        div.innerHTML = \`<img src="\${file.dataUrl}" title="\${file.name}"><br>JPG → PNG\`;
+        div.innerHTML = `<img src="${file.dataUrl}" title="${file.name}"><br>JPG → PNG`;
         previewList.appendChild(div);
       });
     }

@@ -155,7 +155,7 @@
     function handleFile(file) {
       if (!file.type.startsWith('image/')) return;
       currentFile = file;
-      fileInfo.textContent = \`Original: \${file.name} (\${(file.size/1024).toFixed(2)} KB, \${file.type})\`;
+      fileInfo.textContent = `Original: ${file.name} (${(file.size/1024).toFixed(2)} KB, ${file.type})`;
       
       const reader = new FileReader();
       reader.onload = e => {
@@ -187,7 +187,7 @@
           a.href = convertedURL;
           const ext = selectedFormat.split('/')[1];
           const name = currentFile.name.substring(0, currentFile.name.lastIndexOf('.'));
-          a.download = \`\${name}_converted.\${ext}\`;
+          a.download = `${name}_converted.${ext}`;
           a.click();
         };
       }, selectedFormat, q);

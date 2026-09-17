@@ -172,18 +172,18 @@
         
         const newName = fd.file.name.substring(0, fd.file.name.lastIndexOf('.')) + '.jpg';
         
-        item.innerHTML = \`
+        item.innerHTML = `
           <div class="item-info">
-            <img src="\${url}">
+            <img src="${url}">
             <div>
-              <strong>\${fd.file.name}</strong><br>
-              \${formatSize(fd.origSize)} → \${formatSize(blob.size)}
+              <strong>${fd.file.name}</strong><br>
+              ${formatSize(fd.origSize)} → ${formatSize(blob.size)}
             </div>
           </div>
           <div class="item-actions">
-            <a href="\${url}" download="\${newName}" class="btn">Download JPG</a>
+            <a href="${url}" download="${newName}" class="btn">Download JPG</a>
           </div>
-        \`;
+        `;
         previewList.appendChild(item);
       }
     }

@@ -148,7 +148,7 @@
         const paragraphs = text.split(/\n+/).filter(p => p.trim().length > 0).length;
         
         const readTimeMins = Math.ceil(words / 200);
-        const readingTimeStr = words === 0 ? '0 min' : (readTimeMins <= 1 ? '< 1 min' : \`{readTimeMins} mins\);
+        const readingTimeStr = words === 0 ? '0 min' : (readTimeMins <= 1 ? '< 1 min' : `${readTimeMins} mins\);
 
         document.getElementById('valWords').textContent = words;
         document.getElementById('valChars').textContent = chars;

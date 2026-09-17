@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -131,25 +131,33 @@
 </footer>
 
 <script>
-    const fileInput = document.getElementById('fileInput');
     const dropZone = document.getElementById('dropZone');
-    const controls = document.getElementById('controls');
+    const fileInput = document.getElementById('fileInput');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
     const originalSize = document.getElementById('originalSize');
     const newSize = document.getElementById('newSize');
+    const controls = document.getElementById('controls');
     const widthInput = document.getElementById('widthInput');
     const heightInput = document.getElementById('heightInput');
     const lockAspect = document.getElementById('lockAspect');
-    const scaleSlider = document.getElementById('scaleSlider');
-    const scaleValue = document.getElementById('scaleValue');
-    const radioModes = document.getElementsByName('resizeMode');
+    const radioModes = document.getElementsByName('mode');
     const pixelMode = document.getElementById('pixelMode');
     const percentMode = document.getElementById('percentMode');
-    const canvas = document.getElementById('previewCanvas');
-    const ctx = canvas.getContext('2d');
+    const scaleSlider = document.getElementById('scaleSlider');
+    const scaleValue = document.getElementById('scaleValue');
     const downloadBtn = document.getElementById('downloadBtn');
     
     let originalImage = null;
     let aspectRatio = 1;
+
+    // Prevent default drag behaviors globally so dropping outside doesn't open the file
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      window.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+      }, false);
+    });
 
     // File handling
     dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.background = 'rgba(108, 99, 255, 0.1)'; });
@@ -170,7 +178,7 @@
             originalImage = new Image();
             originalImage.onload = () => {
                 aspectRatio = originalImage.width / originalImage.height;
-                originalSize.textContent = \Original: $ × $ px\;
+                originalSize.textContent = `Original: ${originalImage.width} × ${originalImage.height} px`;
                 widthInput.value = originalImage.width;
                 heightInput.value = originalImage.height;
                 scaleSlider.value = 100;
@@ -226,7 +234,7 @@
         canvas.width = w;
         canvas.height = h;
         ctx.drawImage(originalImage, 0, 0, w, h);
-        newSize.textContent = \New: $ × $ px\;
+        newSize.textContent = `New: ${w} × ${h} px`;
     }
 
     downloadBtn.addEventListener('click', () => {

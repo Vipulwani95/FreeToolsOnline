@@ -181,14 +181,14 @@
         const compSize = blob.size;
         const reduction = origSize > 0 ? ((origSize - compSize) / origSize * 100).toFixed(1) : 0;
         
-        statsDisplay.textContent = \`Original: \${formatBytes(origSize)} → Compressed: \${formatBytes(compSize)} (\${reduction}% \${reduction > 0 ? 'smaller' : 'larger'})\`;
+        statsDisplay.textContent = `Original: ${formatBytes(origSize)} → Compressed: ${formatBytes(compSize)} (${reduction}% ${reduction > 0 ? 'smaller' : 'larger'})`;
         
         downloadBtn.onclick = () => {
           const a = document.createElement('a');
           a.href = compressedBlobURL;
           const ext = mimeType.split('/')[1];
           const name = currentFile.name.substring(0, currentFile.name.lastIndexOf('.'));
-          a.download = \`\${name}_compressed.\${ext}\`;
+          a.download = `${name}_compressed.${ext}`;
           a.click();
         };
       }, mimeType, q);
