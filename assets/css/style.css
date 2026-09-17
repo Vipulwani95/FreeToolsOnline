@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
   --primary: #6C63FF;
@@ -45,6 +45,41 @@ body {
   -webkit-backdrop-filter: blur(18px);
   border-bottom: 1px solid rgba(108,99,255,0.15);
   transition: background 0.3s;
+}
+
+/* ── TRUST BAR ── */
+.trust-bar {
+  position: fixed;
+  top: 68px;
+  left: 0; right: 0;
+  z-index: 999;
+  background: linear-gradient(90deg, rgba(0,212,130,0.12), rgba(108,99,255,0.12));
+  border-bottom: 1px solid rgba(0,212,130,0.2);
+  padding: 7px 5%;
+  text-align: center;
+}
+
+.trust-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.78rem;
+  color: #a8f0d4;
+}
+
+.trust-item strong { color: #00d4aa; }
+
+.trust-divider {
+  color: rgba(0,212,130,0.3);
+  font-size: 1rem;
+}
+
+@media (max-width: 600px) {
+  .trust-divider { display: none; }
+  .trust-bar-inner { gap: 5px; flex-direction: column; }
+  .trust-bar { padding: 8px 4%; }
 }
 
 .nav-logo {
