@@ -1,0 +1,444 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base64 Encoder / Decoder - FreeToolsOnline</title>
+  <meta name="description" content="Encode and decode Base64 text and images online for free. No upload, 100% browser-based." />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>64</text></svg>" />
+  <style>
+    .tool-tabs { display:flex; gap:.5rem; margin-bottom:1.5rem; }
+    .tool-tab {
+      flex:1; padding:.75rem 1rem; border-radius:10px; border:2px solid rgba(108,99,255,0.25);
+      background:rgba(108,99,255,0.06); color:var(--text-muted); font-size:.95rem; font-weight:600;
+      cursor:pointer; text-align:center; transition:all .2s;
+    }
+    .tool-tab.active { background:rgba(108,99,255,0.18); border-color:var(--primary); color:var(--text); }
+    .tool-tab:hover:not(.active) { border-color:rgba(108,99,255,0.5); color:var(--text); }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+    .sub-tabs { display:flex; gap:.5rem; margin-bottom:1.25rem; }
+    .sub-tab {
+      padding:.5rem 1.2rem; border-radius:8px; border:1.5px solid rgba(108,99,255,0.2);
+      background:transparent; color:var(--text-muted); font-size:.85rem; font-weight:600;
+      cursor:pointer; transition:all .2s;
+    }
+    .sub-tab.active { background:rgba(108,99,255,0.15); border-color:var(--primary); color:var(--text); }
+    .sub-panel { display:none; }
+    .sub-panel.active { display:block; }
+    .code-area {
+      width:100%; min-height:160px; background:#111; border:1.5px solid rgba(108,99,255,0.2);
+      border-radius:12px; color:#e0e0e0; font-family:'Courier New',monospace; font-size:.85rem;
+      padding:1rem; resize:vertical; line-height:1.6; outline:none; transition:border-color .2s;
+      box-sizing:border-box;
+    }
+    .code-area:focus { border-color:var(--primary); }
+    .char-count { font-size:.78rem; color:var(--text-muted); margin-top:.35rem; text-align:right; }
+    .btn-row { display:flex; gap:.6rem; flex-wrap:wrap; margin:.75rem 0; }
+    .btn-action {
+      padding:.6rem 1.4rem; border-radius:9px; border:none; cursor:pointer; font-size:.875rem;
+      font-weight:600; transition:all .2s;
+    }
+    .btn-primary { background:var(--gradient); color:#fff; }
+    .btn-secondary { background:rgba(108,99,255,0.12); color:var(--text); border:1.5px solid rgba(108,99,255,0.25); }
+    .btn-action:hover { transform:translateY(-1px); opacity:.9; }
+    .result-label { font-size:.8rem; color:var(--text-muted); margin-bottom:.5rem; text-transform:uppercase; letter-spacing:.05em; }
+    .error-box { background:rgba(255,80,80,0.1); border:1.5px solid rgba(255,80,80,0.35); border-radius:10px; padding:.85rem 1rem; color:#ff8080; font-size:.875rem; margin-top:.75rem; display:none; }
+    .img-drop-zone {
+      border:2px dashed rgba(108,99,255,0.35); border-radius:14px; padding:2.5rem 1rem;
+      text-align:center; cursor:pointer; transition:all .25s; background:rgba(108,99,255,0.04);
+    }
+    .img-drop-zone:hover, .img-drop-zone.drag-over { border-color:var(--primary); background:rgba(108,99,255,0.1); }
+    .img-preview-box { margin-top:1rem; }
+    .img-preview-box img { max-width:100%; max-height:300px; border-radius:10px; border:1.5px solid rgba(108,99,255,0.2); }
+    .img-info { margin-top:.75rem; font-size:.82rem; color:var(--text-muted); }
+    .decoded-preview { margin-top:1rem; text-align:center; }
+    .decoded-preview img { max-width:100%; max-height:300px; border-radius:10px; border:1.5px solid rgba(108,99,255,0.2); }
+    .privacy-note { display:flex; align-items:center; gap:.5rem; padding:.85rem 1.1rem; background:rgba(108,99,255,0.07); border:1px solid rgba(108,99,255,0.18); border-radius:12px; font-size:.83rem; color:var(--text-muted); margin-bottom:1.5rem; }
+    .copy-btn { position:relative; }
+    .copy-btn.copied { background:rgba(52,211,153,0.15) !important; color:#34d399 !important; border-color:#34d399 !important; }
+    @media(max-width:640px) { .tool-tabs { flex-direction:column; } .btn-row { flex-direction:column; } }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo">
+    <span class="logo-free">&#x26A1; FreeTools</span><span class="logo-online">Online</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="../index.html#pdf-tools">PDF Tools</a></li>
+    <li><a href="../index.html#image-tools">Image Tools</a></li>
+    <li><a href="../index.html#text-tools">Text Tools</a></li>
+    <li><a href="../index.html#dev-tools">Dev Tools</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="tool-page-hero">
+  <div class="hero-badge" style="margin-bottom:1rem;">&#x1F4BB; Developer Tool</div>
+  <h1>Base64 <span class="gradient-text">Encoder / Decoder</span></h1>
+  <p>Encode text or images to Base64, decode Base64 back to text or preview images &mdash; 100% in your browser, nothing uploaded.</p>
+</div>
+
+<!-- TOOL AREA -->
+<div class="tool-container">
+
+  <div class="privacy-note">
+    &#x1F512; <strong>Your files never leave your device.</strong> All encoding and decoding happens locally in your browser.
+  </div>
+
+  <!-- MAIN TABS -->
+  <div class="tool-tabs">
+    <div class="tool-tab active" data-main-tab="text">&#x1F4DD; Text Mode</div>
+    <div class="tool-tab" data-main-tab="image">&#x1F5BC;&#xFE0F; Image Mode</div>
+  </div>
+
+  <!-- TEXT MODE PANEL -->
+  <div class="tab-panel active" id="panel-text">
+    <div>
+      <div class="result-label">Input Text</div>
+      <textarea class="code-area" id="textInput" placeholder="Paste your text or Base64 string here..." rows="7"></textarea>
+      <div class="char-count" id="textInputCount">0 characters</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-action btn-primary" id="encodeBtn">&#x2191; Encode to Base64</button>
+      <button class="btn-action btn-primary" id="decodeBtn">&#x2193; Decode from Base64</button>
+      <button class="btn-action btn-secondary" id="clearTextBtn">&#x1F5D1; Clear</button>
+    </div>
+
+    <div id="textError" class="error-box"></div>
+
+    <div style="margin-top:.75rem;">
+      <div class="result-label">Output</div>
+      <textarea class="code-area" id="textOutput" placeholder="Result will appear here..." rows="7" readonly></textarea>
+      <div class="char-count" id="textOutputCount">0 characters</div>
+    </div>
+
+    <div class="btn-row" style="margin-top:.6rem;">
+      <button class="btn-action btn-secondary copy-btn" id="copyTextBtn">&#x1F4CB; Copy Output</button>
+      <button class="btn-action btn-secondary" id="swapBtn">&#x21C5; Swap Input/Output</button>
+    </div>
+  </div>
+
+  <!-- IMAGE MODE PANEL -->
+  <div class="tab-panel" id="panel-image">
+    <div class="sub-tabs">
+      <div class="sub-tab active" data-sub-tab="upload">&#x2B06;&#xFE0F; Upload Image</div>
+      <div class="sub-tab" data-sub-tab="paste">&#x1F4CB; Paste Base64</div>
+    </div>
+
+    <!-- UPLOAD IMAGE SUB-PANEL -->
+    <div class="sub-panel active" id="sub-upload">
+      <div class="img-drop-zone" id="imgDropZone">
+        <div style="font-size:2.5rem;">&#x1F4F7;</div>
+        <h3 style="margin:.5rem 0 .25rem;">Drop an image here or click to browse</h3>
+        <p style="color:var(--text-muted);font-size:.875rem;">Supports JPG, PNG, GIF, WebP, SVG</p>
+      </div>
+      <input type="file" id="imgFileInput" accept="image/*" style="display:none" />
+
+      <div class="img-preview-box" id="imgPreviewBox" style="display:none;">
+        <img id="imgPreview" src="" alt="Preview" />
+        <div class="img-info" id="imgInfo"></div>
+        <div class="btn-row" style="margin-top:.75rem;">
+          <button class="btn-action btn-secondary copy-btn" id="copyImgBase64Btn">&#x1F4CB; Copy Base64</button>
+          <button class="btn-action btn-secondary" id="clearImgBtn">&#x1F5D1; Clear</button>
+        </div>
+        <div style="margin-top:1rem;">
+          <div class="result-label">Base64 Output</div>
+          <textarea class="code-area" id="imgBase64Output" rows="6" readonly placeholder="Base64 string will appear here..."></textarea>
+          <div class="char-count" id="imgBase64Count">0 characters</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASTE BASE64 SUB-PANEL -->
+    <div class="sub-panel" id="sub-paste">
+      <div>
+        <div class="result-label">Paste Base64 String (data URL or raw Base64)</div>
+        <textarea class="code-area" id="pasteBase64Input" rows="6" placeholder="Paste base64 string here, e.g. data:image/png;base64,iVBOR... or just the raw base64 characters"></textarea>
+        <div class="char-count" id="pasteInputCount">0 characters</div>
+      </div>
+
+      <div class="btn-row" style="margin-top:.75rem;">
+        <button class="btn-action btn-primary" id="previewBase64Btn">&#x1F441;&#xFE0F; Preview Image</button>
+        <button class="btn-action btn-secondary" id="clearPasteBtn">&#x1F5D1; Clear</button>
+      </div>
+
+      <div id="pasteError" class="error-box"></div>
+
+      <div class="decoded-preview" id="decodedPreview" style="display:none;">
+        <img id="decodedImg" src="" alt="Decoded image" />
+        <div class="btn-row" style="margin-top:.75rem;justify-content:center;">
+          <button class="btn-action btn-primary" id="downloadDecodedBtn">&#x2B07;&#xFE0F; Download Image</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW TO USE -->
+  <div class="howto-section" style="margin-top:2.5rem;">
+    <h2>&#x1F4D6; How to Use Base64 Encoder / Decoder</h2>
+    <div class="steps-grid">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <h4>Choose a Mode</h4>
+        <p>Select <strong>Text Mode</strong> to encode/decode text strings, or <strong>Image Mode</strong> to convert images to Base64 and back.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <h4>Input Your Data</h4>
+        <p>For text: paste your content and click Encode or Decode. For images: drag and drop or upload a file, or paste a Base64 string.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <h4>Copy or Download</h4>
+        <p>Copy the result to clipboard with one click, or download the decoded image directly to your device.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES NOTE -->
+  <div style="margin-top:1.5rem; padding:1.2rem 1.5rem; background:rgba(108,99,255,0.07); border:1px solid rgba(108,99,255,0.2); border-radius:14px;">
+    <p style="font-size:.85rem; color:var(--text-muted); line-height:1.7;">
+      &#x1F512; <strong style="color:var(--text);">Privacy First:</strong> All encoding/decoding happens in your browser using built-in JavaScript APIs. Nothing is sent to any server. &nbsp;|&nbsp;
+      &#x26A1; <strong style="color:var(--text);">Instant:</strong> No delays, works offline. &nbsp;|&nbsp;
+      &#x1F5BC;&#xFE0F; <strong style="color:var(--text);">Images:</strong> Supports JPG, PNG, WebP, GIF, SVG and more.
+    </p>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="../index.html" class="nav-logo" style="font-size:1.15rem;">
+        <span class="logo-free">&#x26A1; FreeTools</span><span class="logo-online">Online</span>
+      </a>
+      <p>Free, fast and privacy-friendly online tools. Everything runs in your browser &mdash; we never upload your files to any server.</p>
+    </div>
+    <div class="footer-col">
+      <h4>PDF Tools</h4>
+      <ul>
+        <li><a href="jpg-to-pdf.html">JPG to PDF</a></li>
+        <li><a href="../index.html#pdf-tools">Merge PDF</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Other Tools</h4>
+      <ul>
+        <li><a href="image-compressor.html">Image Compressor</a></li>
+        <li><a href="qr-generator.html">QR Code Generator</a></li>
+        <li><a href="word-counter.html">Word Counter</a></li>
+        <li><a href="json-formatter.html">JSON Formatter</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2024 FreeToolsOnline. Made with &#x2764;&#xFE0F; for the web. All processing is done locally in your browser.</p>
+  </div>
+</footer>
+
+<script>
+// ── TAB SWITCHING ──
+document.querySelectorAll('[data-main-tab]').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('[data-main-tab]').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.mainTab).classList.add('active');
+  });
+});
+
+document.querySelectorAll('[data-sub-tab]').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('[data-sub-tab]').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('sub-' + tab.dataset.subTab).classList.add('active');
+  });
+});
+
+// ── TEXT MODE ──
+const textInput  = document.getElementById('textInput');
+const textOutput = document.getElementById('textOutput');
+const textError  = document.getElementById('textError');
+
+function updateCounts() {
+  document.getElementById('textInputCount').textContent = textInput.value.length + ' characters';
+  document.getElementById('textOutputCount').textContent = textOutput.value.length + ' characters';
+}
+
+textInput.addEventListener('input', updateCounts);
+
+document.getElementById('encodeBtn').addEventListener('click', () => {
+  textError.style.display = 'none';
+  try {
+    textOutput.value = btoa(unescape(encodeURIComponent(textInput.value)));
+    updateCounts();
+  } catch(e) {
+    textError.textContent = 'Encode error: ' + e.message;
+    textError.style.display = 'block';
+  }
+});
+
+document.getElementById('decodeBtn').addEventListener('click', () => {
+  textError.style.display = 'none';
+  try {
+    const raw = textInput.value.trim().replace(/\s/g, '');
+    textOutput.value = decodeURIComponent(escape(atob(raw)));
+    updateCounts();
+  } catch(e) {
+    textError.textContent = '&#x274C; Invalid Base64 string. Make sure the input contains only valid Base64 characters.';
+    textError.innerHTML = '&#x274C; Invalid Base64 string. Make sure the input contains only valid Base64 characters.';
+    textError.style.display = 'block';
+  }
+});
+
+document.getElementById('clearTextBtn').addEventListener('click', () => {
+  textInput.value = '';
+  textOutput.value = '';
+  textError.style.display = 'none';
+  updateCounts();
+});
+
+document.getElementById('swapBtn').addEventListener('click', () => {
+  const tmp = textInput.value;
+  textInput.value = textOutput.value;
+  textOutput.value = tmp;
+  updateCounts();
+});
+
+function copyWithFeedback(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '&#x2713; Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    const orig = btn.innerHTML;
+    btn.innerHTML = '&#x2713; Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+document.getElementById('copyTextBtn').addEventListener('click', function() {
+  copyWithFeedback(this, textOutput.value);
+});
+
+// ── IMAGE MODE — UPLOAD ──
+const imgDropZone     = document.getElementById('imgDropZone');
+const imgFileInput    = document.getElementById('imgFileInput');
+const imgPreviewBox   = document.getElementById('imgPreviewBox');
+const imgPreview      = document.getElementById('imgPreview');
+const imgInfo         = document.getElementById('imgInfo');
+const imgBase64Output = document.getElementById('imgBase64Output');
+
+function formatBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(2) + ' MB';
+}
+
+function loadImageFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    imgPreview.src = dataUrl;
+    imgBase64Output.value = dataUrl;
+    document.getElementById('imgBase64Count').textContent = dataUrl.length + ' characters';
+    imgPreviewBox.style.display = 'block';
+
+    const img = new Image();
+    img.onload = () => {
+      imgInfo.textContent = file.name + ' \u2022 ' + formatBytes(file.size) + ' \u2022 ' + img.naturalWidth + ' \xd7 ' + img.naturalHeight + ' px \u2022 ' + file.type;
+    };
+    img.src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
+imgDropZone.addEventListener('click', () => imgFileInput.click());
+imgDropZone.addEventListener('dragover', e => { e.preventDefault(); imgDropZone.classList.add('drag-over'); });
+imgDropZone.addEventListener('dragleave', () => imgDropZone.classList.remove('drag-over'));
+imgDropZone.addEventListener('drop', e => {
+  e.preventDefault(); imgDropZone.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) loadImageFile(f);
+});
+imgFileInput.addEventListener('change', () => { if (imgFileInput.files[0]) loadImageFile(imgFileInput.files[0]); });
+
+document.getElementById('copyImgBase64Btn').addEventListener('click', function() {
+  copyWithFeedback(this, imgBase64Output.value);
+});
+
+document.getElementById('clearImgBtn').addEventListener('click', () => {
+  imgPreview.src = '';
+  imgBase64Output.value = '';
+  imgInfo.textContent = '';
+  imgPreviewBox.style.display = 'none';
+  imgFileInput.value = '';
+});
+
+// ── IMAGE MODE — PASTE ──
+const pasteInput    = document.getElementById('pasteBase64Input');
+const pasteError    = document.getElementById('pasteError');
+const decodedPreview = document.getElementById('decodedPreview');
+const decodedImg    = document.getElementById('decodedImg');
+
+pasteInput.addEventListener('input', () => {
+  document.getElementById('pasteInputCount').textContent = pasteInput.value.length + ' characters';
+});
+
+document.getElementById('previewBase64Btn').addEventListener('click', () => {
+  pasteError.style.display = 'none';
+  decodedPreview.style.display = 'none';
+  let val = pasteInput.value.trim();
+  if (!val) { pasteError.innerHTML = '&#x26A0; Please paste a Base64 string first.'; pasteError.style.display = 'block'; return; }
+
+  // If raw base64 (no data URL prefix), auto-detect or default to png
+  if (!val.startsWith('data:')) {
+    val = 'data:image/png;base64,' + val.replace(/\s/g, '');
+  }
+
+  const img = new Image();
+  img.onload = () => {
+    decodedImg.src = val;
+    decodedPreview.style.display = 'block';
+  };
+  img.onerror = () => {
+    pasteError.innerHTML = '&#x274C; Could not decode image. Make sure you pasted a valid Base64 image string.';
+    pasteError.style.display = 'block';
+  };
+  img.src = val;
+});
+
+document.getElementById('downloadDecodedBtn').addEventListener('click', () => {
+  const src = decodedImg.src;
+  if (!src) return;
+  const a = document.createElement('a');
+  a.href = src;
+  const mime = src.split(';')[0].split(':')[1] || 'image/png';
+  const ext = mime.split('/')[1] || 'png';
+  a.download = 'decoded-image.' + ext;
+  a.click();
+});
+
+document.getElementById('clearPasteBtn').addEventListener('click', () => {
+  pasteInput.value = '';
+  decodedPreview.style.display = 'none';
+  pasteError.style.display = 'none';
+  document.getElementById('pasteInputCount').textContent = '0 characters';
+});
+</script>
+
+</body>
+</html>
