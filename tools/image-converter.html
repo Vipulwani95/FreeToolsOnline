@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Converter - FreeToolsOnline</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    body { background: #0D0D0D; color: #fff; font-family: sans-serif; }
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .card { background: #1A1A2E; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    h1 { color: #6C63FF; text-align: center; }
+    .drop-zone { border: 2px dashed #6C63FF; padding: 40px; text-align: center; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+    .drop-zone.dragover { background: rgba(108, 99, 255, 0.2); }
+    .btn { background: #6C63FF; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; display: inline-block; margin: 5px; }
+    .btn:hover { opacity: 0.9; }
+    .btn.active { background: #4CAF50; }
+    .hidden { display: none; }
+    .preview { max-width: 100%; border-radius: 4px; margin-top: 15px; }
+    .info { font-size: 1.1em; color: #ccc; margin: 10px 0; }
+    input[type=range] { width: 100%; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#pdf-tools">PDF Tools</a></li>
+      <li><a href="../index.html#image-tools">Image Tools</a></li>
+      <li><a href="../index.html#text-tools">Text Tools</a></li>
+      <li><a href="../index.html#dev-tools">Dev Tools</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h1>Image Converter</h1>
+    <div class="card">
+      <p style="text-align: center;">🔒 Your files never leave your device</p>
+      
+      <div id="dropZone" class="drop-zone">
+        <p>Drag & Drop an image (JPG/PNG/WEBP/GIF) or click</p>
+        <input type="file" id="fileInput" accept="image/*" class="hidden">
+      </div>
+
+      <div id="controls" class="hidden" style="margin-top: 20px;">
+        <div class="info" id="fileInfo"></div>
+        
+        <h3>Select Output Format:</h3>
+        <button class="btn format-btn active" data-format="image/jpeg">JPG</button>
+        <button class="btn format-btn" data-format="image/png">PNG</button>
+        <button class="btn format-btn" data-format="image/webp">WEBP</button>
+        
+        <div id="qualityControl">
+          <label>Quality (JPG/WEBP): <span id="qVal">90</span>%</label>
+          <input type="range" id="qSlider" min="1" max="100" value="90">
+        </div>
+        
+        <button id="downloadBtn" class="btn" style="background:#4CAF50; width:100%; margin-top:20px;">Download Converted Image</button>
+        
+        <div style="text-align: center; margin-top: 20px;">
+          <h3>Preview</h3>
+          <img id="previewImg" class="preview">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>How to use:</h3>
+      <ol>
+        <li>Upload any image file.</li>
+        <li>Select the desired output format (JPG, PNG, WEBP).</li>
+        <li>Adjust quality if converting to a lossy format.</li>
+        <li>Click download to save your new image.</li>
+      </ol>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="../index.html" class="nav-logo" style="font-size:1.15rem;">
+          <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+        </a>
+        <p>Free, fast and privacy-friendly online tools. Everything runs in your browser — we never upload your files to any server.</p>
+      </div>
+      <div class="footer-col">
+        <h4>PDF Tools</h4>
+        <ul>
+          <li><a href="jpg-to-pdf.html">JPG to PDF</a></li>
+          <li><a href="../index.html#pdf-tools">Merge PDF</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Other Tools</h4>
+        <ul>
+          <li><a href="image-compressor.html">Image Compressor</a></li>
+          <li><a href="qr-generator.html">QR Code Generator</a></li>
+          <li><a href="word-counter.html">Word Counter</a></li>
+          <li><a href="json-formatter.html">JSON Formatter</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 FreeToolsOnline. Made with ❤️ for the web. All processing is done locally in your browser.</p>
+    </div>
+  </footer>
+
+  <script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const controls = document.getElementById('controls');
+    const fileInfo = document.getElementById('fileInfo');
+    const formatBtns = document.querySelectorAll('.format-btn');
+    const qualityControl = document.getElementById('qualityControl');
+    const qSlider = document.getElementById('qSlider');
+    const qVal = document.getElementById('qVal');
+    const previewImg = document.getElementById('previewImg');
+    const downloadBtn = document.getElementById('downloadBtn');
+    
+    let currentFile = null;
+    let imgObj = new Image();
+    let selectedFormat = 'image/jpeg';
+    let convertedURL = null;
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', e => {
+      if (e.target.files.length) handleFile(e.target.files[0]);
+    });
+
+    formatBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        formatBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedFormat = btn.dataset.format;
+        if (selectedFormat === 'image/png') qualityControl.style.display = 'none';
+        else qualityControl.style.display = 'block';
+        convertImage();
+      });
+    });
+
+    qSlider.addEventListener('input', () => {
+      qVal.textContent = qSlider.value;
+      convertImage();
+    });
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) return;
+      currentFile = file;
+      fileInfo.textContent = \`Original: \${file.name} (\${(file.size/1024).toFixed(2)} KB, \${file.type})\`;
+      
+      const reader = new FileReader();
+      reader.onload = e => {
+        imgObj.src = e.target.result;
+        imgObj.onload = () => {
+          controls.classList.remove('hidden');
+          convertImage();
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function convertImage() {
+      const canvas = document.createElement('canvas');
+      canvas.width = imgObj.width;
+      canvas.height = imgObj.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(imgObj, 0, 0);
+      
+      const q = parseInt(qSlider.value) / 100;
+      
+      canvas.toBlob(blob => {
+        if (convertedURL) URL.revokeObjectURL(convertedURL);
+        convertedURL = URL.createObjectURL(blob);
+        previewImg.src = convertedURL;
+        
+        downloadBtn.onclick = () => {
+          const a = document.createElement('a');
+          a.href = convertedURL;
+          const ext = selectedFormat.split('/')[1];
+          const name = currentFile.name.substring(0, currentFile.name.lastIndexOf('.'));
+          a.download = \`\${name}_converted.\${ext}\`;
+          a.click();
+        };
+      }, selectedFormat, q);
+    }
+  </script>
+</body>
+</html>

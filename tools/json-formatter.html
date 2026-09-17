@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Formatter & Validator - FreeToolsOnline</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    body { background-color: #0D0D0D; color: #fff; font-family: sans-serif; margin: 0; padding: 0; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .header-info { text-align: center; margin-bottom: 20px; }
+    .privacy-note { color: #8B949E; font-size: 0.9em; margin-top: 5px; }
+    .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 768px) { .tool-grid { grid-template-columns: 1fr; } }
+    .card { background: #1A1A2E; padding: 15px; border-radius: 8px; position: relative; display: flex; flex-direction: column; }
+    textarea, pre { width: 100%; height: 500px; background: #0D0D0D; color: #fff; border: 1px solid #333; border-radius: 4px; padding: 10px; font-family: monospace; font-size: 14px; box-sizing: border-box; resize: vertical; margin-bottom: 10px; overflow: auto; }
+    .btn-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    button { background: #6C63FF; color: #fff; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    button:hover { background: #5a52d6; }
+    button.clear { background: #444; }
+    button.clear:hover { background: #555; }
+    .status-bar { display: flex; justify-content: space-between; font-size: 0.8em; color: #8B949E; }
+    .error-msg { color: #FF7B72; margin-top: 10px; white-space: pre-wrap; font-family: monospace; }
+    
+    .key { color: #79C0FF; }
+    .string { color: #A5D6FF; }
+    .number { color: #FFA657; }
+    .boolean { color: #FF7B72; }
+    .null { color: #FF7B72; }
+    
+    .how-to { margin-top: 40px; background: #1A1A2E; padding: 20px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#pdf-tools">PDF Tools</a></li>
+      <li><a href="../index.html#image-tools">Image Tools</a></li>
+      <li><a href="../index.html#text-tools">Text Tools</a></li>
+      <li><a href="../index.html#dev-tools">Dev Tools</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="header-info">
+      <h1>JSON Formatter & Validator</h1>
+      <p class="privacy-note">🔒 Your files never leave your device</p>
+    </div>
+
+    <div class="btn-row">
+      <button onclick="formatJson()">Format / Beautify</button>
+      <button onclick="minifyJson()">Minify</button>
+      <button onclick="validateJson()">Validate</button>
+      <button class="clear" onclick="clearAll()">Clear</button>
+      <span style="align-self:center; color:#8B949E; font-size:0.9em; margin-left:auto;">Hint: Ctrl+Enter to format</span>
+    </div>
+
+    <div class="tool-grid">
+      <div class="card">
+        <h3>Input JSON</h3>
+        <textarea id="input-json" placeholder="Paste your JSON here..."></textarea>
+        <div class="status-bar">
+          <span id="line-count">Lines: 0</span>
+        </div>
+        <div id="error-display" class="error-msg"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="display:flex; justify-content:space-between; align-items:center; margin-top:0;">
+          Output
+          <button onclick="copyOutput()" style="padding: 5px 10px; font-size: 0.8em;">Copy</button>
+        </h3>
+        <pre id="output-json"></pre>
+      </div>
+    </div>
+
+    <div class="how-to">
+      <h3>How to use JSON Formatter</h3>
+      <ol>
+        <li>Paste your JSON code into the Input text area on the left.</li>
+        <li>Click "Format / Beautify" to neatly indent your JSON with 2 spaces.</li>
+        <li>Click "Minify" to remove all unnecessary whitespace and condense the code.</li>
+        <li>Click "Validate" to check if the JSON is valid. If there's an error, it will highlight the problematic line.</li>
+        <li>Click "Copy" on the output area to copy the formatted code.</li>
+      </ol>
+      <p>All formatting and validation is performed directly in your browser ensuring your data remains private and secure.</p>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="../index.html" class="nav-logo" style="font-size:1.15rem;">
+          <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+        </a>
+        <p>Free, fast and privacy-friendly online tools. Everything runs in your browser — we never upload your files to any server.</p>
+      </div>
+      <div class="footer-col">
+        <h4>PDF Tools</h4>
+        <ul>
+          <li><a href="jpg-to-pdf.html">JPG to PDF</a></li>
+          <li><a href="../index.html#pdf-tools">Merge PDF</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Other Tools</h4>
+        <ul>
+          <li><a href="image-compressor.html">Image Compressor</a></li>
+          <li><a href="qr-generator.html">QR Code Generator</a></li>
+          <li><a href="word-counter.html">Word Counter</a></li>
+          <li><a href="json-formatter.html">JSON Formatter</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 FreeToolsOnline. Made with ❤️ for the web. All processing is done locally in your browser.</p>
+    </div>
+  </footer>
+
+  <script>
+    const inputArea = document.getElementById('input-json');
+    const outputArea = document.getElementById('output-json');
+    const errorDisplay = document.getElementById('error-display');
+    const lineCount = document.getElementById('line-count');
+
+    function updateLineCount() {
+      const lines = inputArea.value.split('\n').length;
+      lineCount.textContent = `Lines: $`;
+    }
+
+    inputArea.addEventListener('input', updateLineCount);
+    inputArea.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.key === 'Enter') {
+        formatJson();
+      }
+    });
+
+    function syntaxHighlight(json) {
+      if (typeof json != 'string') {
+        json = JSON.stringify(json, undefined, 2);
+      }
+      json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(match) {
+        let cls = 'number';
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = 'key';
+            return '<span class="' + cls + '">' + match.slice(0, -1) + '</span><span style="color:#8B949E">:</span>';
+          }
+          else cls = 'string';
+        } else if (/true|false/.test(match)) cls = 'boolean';
+        else if (/null/.test(match)) cls = 'null';
+        return '<span class="' + cls + '">' + match + '</span>';
+      }).replace(/([\{\}\[\]\,])/g, '<span style="color:#8B949E">$1</span>');
+    }
+
+    function formatJson() {
+      errorDisplay.textContent = '';
+      const val = inputArea.value.trim();
+      if (!val) return;
+      try {
+        const obj = JSON.parse(val);
+        const pretty = JSON.stringify(obj, null, 2);
+        outputArea.innerHTML = syntaxHighlight(pretty);
+      } catch (e) {
+        showError(e, val);
+      }
+    }
+
+    function minifyJson() {
+      errorDisplay.textContent = '';
+      const val = inputArea.value.trim();
+      if (!val) return;
+      try {
+        const obj = JSON.parse(val);
+        const minified = JSON.stringify(obj);
+        outputArea.innerHTML = syntaxHighlight(minified);
+      } catch (e) {
+        showError(e, val);
+      }
+    }
+
+    function validateJson() {
+      errorDisplay.textContent = '';
+      const val = inputArea.value.trim();
+      if (!val) return;
+      try {
+        JSON.parse(val);
+        errorDisplay.style.color = '#79C0FF';
+        errorDisplay.textContent = 'Valid JSON!';
+        setTimeout(() => errorDisplay.textContent='', 2000);
+      } catch (e) {
+        showError(e, val);
+      }
+    }
+
+    function showError(e, val) {
+      errorDisplay.style.color = '#FF7B72';
+      let msg = e.toString();
+      const match = msg.match(/position (\d+)/);
+      if (match) {
+        const pos = parseInt(match[1]);
+        const lines = val.slice(0, pos).split('\n');
+        msg += `\nError near line $: $`;
+      }
+      errorDisplay.textContent = msg;
+    }
+
+    function clearAll() {
+      inputArea.value = '';
+      outputArea.innerHTML = '';
+      errorDisplay.textContent = '';
+      updateLineCount();
+    }
+
+    function copyOutput() {
+      const text = outputArea.textContent;
+      if (text) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Copied to clipboard!');
+        });
+      }
+    }
+  </script>
+</body>
+</html>

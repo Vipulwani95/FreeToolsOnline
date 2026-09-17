@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Counter - FreeToolsOnline</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .tool-container { max-width: 1000px; margin: 2rem auto; padding: 2rem; background: #1A1A2E; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        h1 { color: #6C63FF; text-align: center; margin-bottom: 1rem; }
+        .privacy-note { text-align: center; color: #a0a0a0; margin-bottom: 2rem; font-size: 0.9rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: linear-gradient(145deg, #22223b, #1A1A2E); padding: 1.5rem 1rem; border-radius: 8px; text-align: center; border: 1px solid #333; }
+        .stat-value { font-size: 2rem; font-weight: bold; color: #6C63FF; margin-bottom: 0.5rem; }
+        .stat-label { color: #aaa; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        textarea { width: 100%; min-height: 300px; background: #0D0D0D; color: #fff; border: 1px solid #444; border-radius: 8px; padding: 1rem; font-size: 1rem; font-family: inherit; resize: vertical; box-sizing: border-box; }
+        textarea:focus { outline: none; border-color: #6C63FF; }
+        .actions { display: flex; gap: 1rem; margin-top: 1rem; }
+        button { flex: 1; background: #6C63FF; color: white; border: none; padding: 0.75rem; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+        button.secondary { background: #333; }
+        button:hover { opacity: 0.9; }
+        .keywords { margin-top: 2rem; background: #0D0D0D; padding: 1.5rem; border-radius: 8px; }
+        .keywords h3 { color: #6C63FF; margin-top: 0; }
+        .keyword-list { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .keyword-item { background: #1A1A2E; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; color: #ddd; border: 1px solid #333; }
+        .how-to { margin-top: 3rem; background: #1A1A2E; padding: 1.5rem; border-radius: 8px; }
+        .how-to h3 { color: #6C63FF; margin-bottom: 1rem; }
+        .how-to ol { padding-left: 1.5rem; color: #ddd; }
+        .how-to li { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body style="background: #0D0D0D; color: #fff; font-family: sans-serif; margin: 0;">
+
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo" style="text-decoration: none; font-size: 1.5rem; font-weight: bold; color: white; display: flex; align-items: center; padding: 1rem;">
+    <span class="logo-free" style="color: #fff;">⚡ FreeTools</span><span class="logo-online" style="color: #6C63FF;">Online</span>
+  </a>
+  <ul class="nav-links" style="display: flex; list-style: none; gap: 1.5rem; padding: 1rem; margin: 0;">
+    <li><a href="../index.html#pdf-tools" style="color: #ddd; text-decoration: none;">PDF Tools</a></li>
+    <li><a href="../index.html#image-tools" style="color: #ddd; text-decoration: none;">Image Tools</a></li>
+    <li><a href="../index.html#text-tools" style="color: #ddd; text-decoration: none;">Text Tools</a></li>
+    <li><a href="../index.html#dev-tools" style="color: #ddd; text-decoration: none;">Dev Tools</a></li>
+  </ul>
+</nav>
+
+<div class="tool-container">
+    <h1>Word Counter</h1>
+    <p class="privacy-note">🔒 Your text never leaves your device. All processing is done locally in your browser.</p>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value" id="valWords">0</div>
+            <div class="stat-label">Words</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="valChars">0</div>
+            <div class="stat-label">Characters</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="valCharsNoSpace">0</div>
+            <div class="stat-label">Chars (No Space)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="valSentences">0</div>
+            <div class="stat-label">Sentences</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="valParagraphs">0</div>
+            <div class="stat-label">Paragraphs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="valReadingTime">0 min</div>
+            <div class="stat-label">Reading Time</div>
+        </div>
+    </div>
+
+    <textarea id="textInput" placeholder="Type or paste your text here..."></textarea>
+    
+    <div class="actions">
+        <button id="copyBtn">Copy Text</button>
+        <button id="clearBtn" class="secondary">Clear Text</button>
+    </div>
+
+    <div class="keywords">
+        <h3>Top Keywords</h3>
+        <div class="keyword-list" id="keywordList">
+            <div class="keyword-item">No text yet</div>
+        </div>
+    </div>
+
+    <div class="how-to">
+        <h3>How to use</h3>
+        <ol>
+            <li>Type or paste your text into the large text area above.</li>
+            <li>The statistics will update instantly as you type.</li>
+            <li>View detailed counts for words, characters (with and without spaces), sentences, and paragraphs.</li>
+            <li>Check the estimated reading time based on an average reading speed of 200 words per minute.</li>
+            <li>Use the "Top Keywords" section to see the most frequently used words (excluding common stop words).</li>
+            <li>Use the Clear or Copy buttons to manage your text.</li>
+        </ol>
+    </div>
+</div>
+
+<footer style="background: #1A1A2E; padding: 2rem 1rem; margin-top: 3rem;">
+  <div class="footer-inner" style="max-width: 1000px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 2rem;">
+    <!-- footer content same as others -->
+    <div class="footer-brand" style="flex: 1; min-width: 250px;">
+      <a href="../index.html" class="nav-logo" style="text-decoration: none; font-size:1.15rem; font-weight: bold; color: white;">
+        <span class="logo-free" style="color: #fff;">⚡ FreeTools</span><span class="logo-online" style="color: #6C63FF;">Online</span>
+      </a>
+      <p style="color: #aaa; font-size: 0.9rem; line-height: 1.5; margin-top: 1rem;">Free, fast and privacy-friendly online tools. Everything runs in your browser — we never upload your files to any server.</p>
+    </div>
+    <div class="footer-col" style="min-width: 150px;">
+      <h4 style="color: #fff; margin-bottom: 1rem;">PDF Tools</h4>
+      <ul style="list-style: none; padding: 0; margin: 0; color: #aaa; line-height: 1.8;">
+        <li><a href="jpg-to-pdf.html" style="color: #aaa; text-decoration: none;">JPG to PDF</a></li>
+        <li><a href="../index.html#pdf-tools" style="color: #aaa; text-decoration: none;">Merge PDF</a></li>
+      </ul>
+    </div>
+    <div class="footer-col" style="min-width: 150px;">
+      <h4 style="color: #fff; margin-bottom: 1rem;">Other Tools</h4>
+      <ul style="list-style: none; padding: 0; margin: 0; color: #aaa; line-height: 1.8;">
+        <li><a href="image-compressor.html" style="color: #aaa; text-decoration: none;">Image Compressor</a></li>
+        <li><a href="qr-generator.html" style="color: #aaa; text-decoration: none;">QR Code Generator</a></li>
+        <li><a href="word-counter.html" style="color: #aaa; text-decoration: none;">Word Counter</a></li>
+        <li><a href="json-formatter.html" style="color: #aaa; text-decoration: none;">JSON Formatter</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom" style="text-align: center; color: #888; font-size: 0.8rem; margin-top: 2rem; border-top: 1px solid #333; padding-top: 1rem;">
+    <p>© 2024 FreeToolsOnline. Made with ❤️ for the web. All processing is done locally in your browser.</p>
+  </div>
+</footer>
+
+<script>
+    const textInput = document.getElementById('textInput');
+    const stopWords = new Set(['the','a','an','is','are','was','were','and','or','but','in','on','at','to','for','of','with','by','from','it','this','that','as','be','been','has','have','had','not','he','she','they','we','you','i','my','your','his','her','their','our','its']);
+
+    function updateStats() {
+        const text = textInput.value;
+        const chars = text.length;
+        const charsNoSpace = text.replace(/\s/g, '').length;
+        
+        const wordsArr = text.trim().split(/\s+/).filter(w => w.length > 0);
+        const words = wordsArr.length;
+        
+        const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+        const paragraphs = text.split(/\n+/).filter(p => p.trim().length > 0).length;
+        
+        const readTimeMins = Math.ceil(words / 200);
+        const readingTimeStr = words === 0 ? '0 min' : (readTimeMins <= 1 ? '< 1 min' : \`{readTimeMins} mins\);
+
+        document.getElementById('valWords').textContent = words;
+        document.getElementById('valChars').textContent = chars;
+        document.getElementById('valCharsNoSpace').textContent = charsNoSpace;
+        document.getElementById('valSentences').textContent = sentences;
+        document.getElementById('valParagraphs').textContent = paragraphs;
+        document.getElementById('valReadingTime').textContent = readingTimeStr;
+
+        // Keywords
+        const wordCounts = {};
+        wordsArr.forEach(w => {
+            const clean = w.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if(clean && !stopWords.has(clean)) {
+                wordCounts[clean] = (wordCounts[clean] || 0) + 1;
+            }
+        });
+        
+        const sorted = Object.entries(wordCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        const kwList = document.getElementById('keywordList');
+        if(sorted.length === 0) {
+            kwList.innerHTML = '<div class="keyword-item">No keywords yet</div>';
+        } else {
+            kwList.innerHTML = sorted.map(([word, count]) => \
+                <div class="keyword-item">$ <span style="color:#6C63FF;font-weight:bold;">($)</span></div>
+            \).join('');
+        }
+    }
+
+    textInput.addEventListener('input', updateStats);
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+        textInput.value = '';
+        updateStats();
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+        textInput.select();
+        document.execCommand('copy');
+        const orig = document.getElementById('copyBtn').textContent;
+        document.getElementById('copyBtn').textContent = 'Copied!';
+        setTimeout(() => document.getElementById('copyBtn').textContent = orig, 2000);
+    });
+</script>
+</body>
+</html>

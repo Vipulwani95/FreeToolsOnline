@@ -1,0 +1,241 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resize Image - FreeToolsOnline</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .tool-container { max-width: 800px; margin: 2rem auto; padding: 2rem; background: #1A1A2E; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        h1 { color: #6C63FF; text-align: center; margin-bottom: 1rem; }
+        .privacy-note { text-align: center; color: #a0a0a0; margin-bottom: 2rem; font-size: 0.9rem; }
+        .upload-area { border: 2px dashed #6C63FF; padding: 2rem; text-align: center; border-radius: 8px; margin-bottom: 1.5rem; cursor: pointer; }
+        .upload-area:hover { background: rgba(108, 99, 255, 0.1); }
+        .controls { display: none; gap: 1.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .control-group { background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; flex: 1; min-width: 300px; }
+        label { display: block; margin-bottom: 0.5rem; color: #fff; }
+        input[type="number"], input[type="range"] { width: 100%; padding: 0.5rem; margin-bottom: 1rem; border-radius: 4px; border: 1px solid #444; background: #0D0D0D; color: #fff; }
+        .radio-group { display: flex; gap: 1rem; margin-bottom: 1rem; }
+        .preview-area { text-align: center; margin-top: 1.5rem; }
+        canvas { max-width: 100%; height: auto; border-radius: 4px; background: #000; }
+        button { background: #6C63FF; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer; font-size: 1rem; width: 100%; }
+        button:hover { background: #5750d9; }
+        .how-to { margin-top: 3rem; background: #1A1A2E; padding: 1.5rem; border-radius: 8px; }
+        .how-to h3 { color: #6C63FF; margin-bottom: 1rem; }
+        .how-to ol { padding-left: 1.5rem; color: #ddd; }
+        .how-to li { margin-bottom: 0.5rem; }
+        .aspect-lock { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+        .aspect-lock input { margin: 0; }
+        .mode-section { display: none; }
+        .mode-section.active { display: block; }
+    </style>
+</head>
+<body style="background: #0D0D0D; color: #fff; font-family: sans-serif; margin: 0;">
+
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo" style="text-decoration: none; font-size: 1.5rem; font-weight: bold; color: white; display: flex; align-items: center; padding: 1rem;">
+    <span class="logo-free" style="color: #fff;">⚡ FreeTools</span><span class="logo-online" style="color: #6C63FF;">Online</span>
+  </a>
+  <ul class="nav-links" style="display: flex; list-style: none; gap: 1.5rem; padding: 1rem; margin: 0;">
+    <li><a href="../index.html#pdf-tools" style="color: #ddd; text-decoration: none;">PDF Tools</a></li>
+    <li><a href="../index.html#image-tools" style="color: #ddd; text-decoration: none;">Image Tools</a></li>
+    <li><a href="../index.html#text-tools" style="color: #ddd; text-decoration: none;">Text Tools</a></li>
+    <li><a href="../index.html#dev-tools" style="color: #ddd; text-decoration: none;">Dev Tools</a></li>
+  </ul>
+</nav>
+
+<div class="tool-container">
+    <h1>Resize Image</h1>
+    <p class="privacy-note">🔒 Your files never leave your device. All processing is done locally in your browser.</p>
+
+    <div class="upload-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <p>Click or drag image here to upload (JPG, PNG, WEBP)</p>
+        <input type="file" id="fileInput" accept="image/png, image/jpeg, image/webp" style="display: none;">
+    </div>
+
+    <div class="controls" id="controls">
+        <div class="control-group">
+            <p id="originalSize" style="margin-top: 0; color: #aaa;">Original: 0 × 0 px</p>
+            
+            <div class="radio-group">
+                <label><input type="radio" name="resizeMode" value="pixel" checked> By Dimensions</label>
+                <label><input type="radio" name="resizeMode" value="percentage"> By Percentage</label>
+            </div>
+
+            <div id="pixelMode" class="mode-section active">
+                <div class="aspect-lock">
+                    <input type="checkbox" id="lockAspect" checked>
+                    <label for="lockAspect" style="margin: 0;">Lock Aspect Ratio</label>
+                </div>
+                <label>Width (px)</label>
+                <input type="number" id="widthInput" min="1">
+                <label>Height (px)</label>
+                <input type="number" id="heightInput" min="1">
+            </div>
+
+            <div id="percentMode" class="mode-section">
+                <label>Scale: <span id="scaleValue">100</span>%</label>
+                <input type="range" id="scaleSlider" min="10" max="200" value="100">
+            </div>
+
+            <button id="downloadBtn">Download Resized Image</button>
+        </div>
+        <div class="control-group preview-area">
+            <h3 style="margin-top: 0;">Preview</h3>
+            <canvas id="previewCanvas"></canvas>
+            <p id="newSize" style="color: #aaa; margin-top: 0.5rem;">New: 0 × 0 px</p>
+        </div>
+    </div>
+
+    <div class="how-to">
+        <h3>How to use</h3>
+        <ol>
+            <li>Upload your image by clicking the upload area or dragging a file.</li>
+            <li>Select your preferred resizing method (Dimensions or Percentage).</li>
+            <li>If using Dimensions, enter the new width or height. Keep "Lock Aspect Ratio" checked to avoid distortion.</li>
+            <li>If using Percentage, adjust the slider to scale the image up or down.</li>
+            <li>Check the live preview and the new dimensions below it.</li>
+            <li>Click "Download Resized Image" to save your result.</li>
+        </ol>
+    </div>
+</div>
+
+<footer style="background: #1A1A2E; padding: 2rem 1rem; margin-top: 3rem;">
+  <div class="footer-inner" style="max-width: 1000px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 2rem;">
+    <div class="footer-brand" style="flex: 1; min-width: 250px;">
+      <a href="../index.html" class="nav-logo" style="text-decoration: none; font-size:1.15rem; font-weight: bold; color: white;">
+        <span class="logo-free" style="color: #fff;">⚡ FreeTools</span><span class="logo-online" style="color: #6C63FF;">Online</span>
+      </a>
+      <p style="color: #aaa; font-size: 0.9rem; line-height: 1.5; margin-top: 1rem;">Free, fast and privacy-friendly online tools. Everything runs in your browser — we never upload your files to any server.</p>
+    </div>
+    <div class="footer-col" style="min-width: 150px;">
+      <h4 style="color: #fff; margin-bottom: 1rem;">PDF Tools</h4>
+      <ul style="list-style: none; padding: 0; margin: 0; color: #aaa; line-height: 1.8;">
+        <li><a href="jpg-to-pdf.html" style="color: #aaa; text-decoration: none;">JPG to PDF</a></li>
+        <li><a href="../index.html#pdf-tools" style="color: #aaa; text-decoration: none;">Merge PDF</a></li>
+      </ul>
+    </div>
+    <div class="footer-col" style="min-width: 150px;">
+      <h4 style="color: #fff; margin-bottom: 1rem;">Other Tools</h4>
+      <ul style="list-style: none; padding: 0; margin: 0; color: #aaa; line-height: 1.8;">
+        <li><a href="image-compressor.html" style="color: #aaa; text-decoration: none;">Image Compressor</a></li>
+        <li><a href="qr-generator.html" style="color: #aaa; text-decoration: none;">QR Code Generator</a></li>
+        <li><a href="word-counter.html" style="color: #aaa; text-decoration: none;">Word Counter</a></li>
+        <li><a href="json-formatter.html" style="color: #aaa; text-decoration: none;">JSON Formatter</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom" style="text-align: center; color: #888; font-size: 0.8rem; margin-top: 2rem; border-top: 1px solid #333; padding-top: 1rem;">
+    <p>© 2024 FreeToolsOnline. Made with ❤️ for the web. All processing is done locally in your browser.</p>
+  </div>
+</footer>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const dropZone = document.getElementById('dropZone');
+    const controls = document.getElementById('controls');
+    const originalSize = document.getElementById('originalSize');
+    const newSize = document.getElementById('newSize');
+    const widthInput = document.getElementById('widthInput');
+    const heightInput = document.getElementById('heightInput');
+    const lockAspect = document.getElementById('lockAspect');
+    const scaleSlider = document.getElementById('scaleSlider');
+    const scaleValue = document.getElementById('scaleValue');
+    const radioModes = document.getElementsByName('resizeMode');
+    const pixelMode = document.getElementById('pixelMode');
+    const percentMode = document.getElementById('percentMode');
+    const canvas = document.getElementById('previewCanvas');
+    const ctx = canvas.getContext('2d');
+    const downloadBtn = document.getElementById('downloadBtn');
+    
+    let originalImage = null;
+    let aspectRatio = 1;
+
+    // File handling
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.background = 'rgba(108, 99, 255, 0.1)'; });
+    dropZone.addEventListener('dragleave', () => { dropZone.style.background = 'transparent'; });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.style.background = 'transparent';
+        if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', (e) => {
+        if(e.target.files.length) handleFile(e.target.files[0]);
+    });
+
+    function handleFile(file) {
+        if(!file.type.match('image.*')) return alert('Please upload an image file (JPG, PNG, WEBP)');
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            originalImage = new Image();
+            originalImage.onload = () => {
+                aspectRatio = originalImage.width / originalImage.height;
+                originalSize.textContent = \Original: $ × $ px\;
+                widthInput.value = originalImage.width;
+                heightInput.value = originalImage.height;
+                scaleSlider.value = 100;
+                scaleValue.textContent = "100";
+                controls.style.display = 'flex';
+                updateCanvas();
+            };
+            originalImage.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Modes
+    radioModes.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if(e.target.value === 'pixel') {
+                pixelMode.classList.add('active');
+                percentMode.classList.remove('active');
+            } else {
+                percentMode.classList.add('active');
+                pixelMode.classList.remove('active');
+            }
+            updateCanvas();
+        });
+    });
+
+    // Inputs
+    widthInput.addEventListener('input', () => {
+        if(lockAspect.checked && widthInput.value) {
+            heightInput.value = Math.round(widthInput.value / aspectRatio);
+        }
+        updateCanvas();
+    });
+    heightInput.addEventListener('input', () => {
+        if(lockAspect.checked && heightInput.value) {
+            widthInput.value = Math.round(heightInput.value * aspectRatio);
+        }
+        updateCanvas();
+    });
+    scaleSlider.addEventListener('input', () => {
+        scaleValue.textContent = scaleSlider.value;
+        if(originalImage) {
+            widthInput.value = Math.round(originalImage.width * (scaleSlider.value / 100));
+            heightInput.value = Math.round(originalImage.height * (scaleSlider.value / 100));
+        }
+        updateCanvas();
+    });
+
+    function updateCanvas() {
+        if(!originalImage) return;
+        const w = parseInt(widthInput.value) || 1;
+        const h = parseInt(heightInput.value) || 1;
+        canvas.width = w;
+        canvas.height = h;
+        ctx.drawImage(originalImage, 0, 0, w, h);
+        newSize.textContent = \New: $ × $ px\;
+    }
+
+    downloadBtn.addEventListener('click', () => {
+        if(!originalImage) return;
+        const link = document.createElement('a');
+        link.download = 'resized-image.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+</script>
+</body>
+</html>

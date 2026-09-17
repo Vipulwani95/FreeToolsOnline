@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Converter - FreeToolsOnline</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .tool-container { max-width: 800px; margin: 2rem auto; padding: 2rem; background: #1A1A2E; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        h1 { color: #6C63FF; text-align: center; margin-bottom: 1rem; }
+        .privacy-note { text-align: center; color: #a0a0a0; margin-bottom: 2rem; font-size: 0.9rem; }
+        textarea { width: 100%; min-height: 250px; background: #0D0D0D; color: #fff; border: 1px solid #444; border-radius: 8px; padding: 1rem; font-size: 1rem; font-family: inherit; resize: vertical; box-sizing: border-box; margin-bottom: 1rem; }
+        textarea:focus { outline: none; border-color: #6C63FF; }
+        .char-count { text-align: right; color: #aaa; font-size: 0.9rem; margin-top: -0.5rem; margin-bottom: 1.5rem; }
+        .buttons-grid { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2rem; }
+        .case-btn { background: rgba(108, 99, 255, 0.1); color: #ddd; border: 1px solid #6C63FF; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+        .case-btn:hover { background: rgba(108, 99, 255, 0.3); }
+        .case-btn.active { background: #6C63FF; color: white; }
+        .copy-btn { background: #4CAF50; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer; font-size: 1rem; width: 100%; font-weight: bold; }
+        .copy-btn:hover { background: #45a049; }
+        .how-to { margin-top: 3rem; background: #1A1A2E; padding: 1.5rem; border-radius: 8px; }
+        .how-to h3 { color: #6C63FF; margin-bottom: 1rem; }
+        .how-to ol { padding-left: 1.5rem; color: #ddd; }
+        .how-to li { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body style="background: #0D0D0D; color: #fff; font-family: sans-serif; margin: 0;">
+
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo" style="text-decoration: none; font-size: 1.5rem; font-weight: bold; color: white; display: flex; align-items: center; padding: 1rem;">
+    <span class="logo-free" style="color: #fff;">⚡ FreeTools</span><span class="logo-online" style="color: #6C63FF;">Online</span>
+  </a>
+  <ul class="nav-links" style="display: flex; list-style: none; gap: 1.5rem; padding: 1rem; margin: 0;">
+    <li><a href="../index.html#pdf-tools" style="color: #ddd; text-decoration: none;">PDF Tools</a></li>
+    <li><a href="../index.html#image-tools" style="color: #ddd; text-decoration: none;">Image Tools</a></li>
+    <li><a href="../index.html#text-tools" style="color: #ddd; text-decoration: none;">Text Tools</a></li>
+    <li><a href="../index.html#dev-tools" style="color: #ddd; text-decoration: none;">Dev Tools</a></li>
+  </ul>
+</nav>
+
+<div class="tool-container">
+    <h1>Case Converter</h1>
+    <p class="privacy-note">🔒 Your text never leaves your device. All processing is done locally in your browser.</p>
+
+    <textarea id="textInput" placeholder="Type or paste your text here..."></textarea>
+    <div class="char-count" id="charCount">0 characters</div>
+
+    <div class="buttons-grid" id="btnGroup">
+        <button class="case-btn" data-action="upper">UPPERCASE</button>
+        <button class="case-btn" data-action="lower">lowercase</button>
+        <button class="case-btn" data-action="title">Title Case</button>
+        <button class="case-btn" data-action="sentence">Sentence case</button>
+        <button class="case-btn" data-action="alternating">aLtErNaTiNg CaSe</button>
+        <button class="case-btn" data-action="camel">camelCase</button>
+        <button class="case-btn" data-action="snake">snake_case</button>
+    </div>
+
+    <button class="copy-btn" id="copyBtn">Copy to Clipboard</button>
+
+    <div class="how-to">
+        <h3>How to use</h3>
+        <ol>
+            <li>Type or paste your text into the text area.</li>
+            <li>Click on any of the formatting buttons (e.g., UPPERCASE, lowercase, snake_case) to instantly convert your text.</li>
+            <li>The active conversion will be highlighted.</li>
+            <li>Click "Copy to Clipboard" to copy the formatted text.</li>
+        </ol>
+    </div>
+</div>
+
+<footer style="background: #1A1A2E; padding: 2rem 1rem; margin-top: 3rem;">
+  <!-- footer content -->
+  <div class="footer-inner" style="max-width: 1000px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 2rem;">
+    <div class="footer-brand" style="flex: 1; min-width: 250px;">
+      <a href="../index.html" class="nav-logo" style="text-decoration: none; font-size:1.15rem; font-weight: bold; color: white;">
+        <span class="logo-free" style="color: #fff;">⚡ FreeTools</span><span class="logo-online" style="color: #6C63FF;">Online</span>
+      </a>
+      <p style="color: #aaa; font-size: 0.9rem; line-height: 1.5; margin-top: 1rem;">Free, fast and privacy-friendly online tools. Everything runs in your browser — we never upload your files to any server.</p>
+    </div>
+    <div class="footer-col" style="min-width: 150px;">
+      <h4 style="color: #fff; margin-bottom: 1rem;">PDF Tools</h4>
+      <ul style="list-style: none; padding: 0; margin: 0; color: #aaa; line-height: 1.8;">
+        <li><a href="jpg-to-pdf.html" style="color: #aaa; text-decoration: none;">JPG to PDF</a></li>
+        <li><a href="../index.html#pdf-tools" style="color: #aaa; text-decoration: none;">Merge PDF</a></li>
+      </ul>
+    </div>
+    <div class="footer-col" style="min-width: 150px;">
+      <h4 style="color: #fff; margin-bottom: 1rem;">Other Tools</h4>
+      <ul style="list-style: none; padding: 0; margin: 0; color: #aaa; line-height: 1.8;">
+        <li><a href="image-compressor.html" style="color: #aaa; text-decoration: none;">Image Compressor</a></li>
+        <li><a href="qr-generator.html" style="color: #aaa; text-decoration: none;">QR Code Generator</a></li>
+        <li><a href="word-counter.html" style="color: #aaa; text-decoration: none;">Word Counter</a></li>
+        <li><a href="json-formatter.html" style="color: #aaa; text-decoration: none;">JSON Formatter</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom" style="text-align: center; color: #888; font-size: 0.8rem; margin-top: 2rem; border-top: 1px solid #333; padding-top: 1rem;">
+    <p>© 2024 FreeToolsOnline. Made with ❤️ for the web. All processing is done locally in your browser.</p>
+  </div>
+</footer>
+
+<script>
+    const textInput = document.getElementById('textInput');
+    const charCount = document.getElementById('charCount');
+    const buttons = document.querySelectorAll('.case-btn');
+    const copyBtn = document.getElementById('copyBtn');
+
+    textInput.addEventListener('input', () => {
+        charCount.textContent = \`{textInput.value.length} characters\;
+    });
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            let text = textInput.value;
+            const action = btn.dataset.action;
+
+            if(action === 'upper') text = text.toUpperCase();
+            else if(action === 'lower') text = text.toLowerCase();
+            else if(action === 'title') {
+                text = text.toLowerCase().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            }
+            else if(action === 'sentence') {
+                text = text.toLowerCase().replace(/(^\s*\w|[.!?]\s+\w)/g, c => c.toUpperCase());
+            }
+            else if(action === 'alternating') {
+                text = text.toLowerCase().split('').map((c, i) => i % 2 === 0 ? c.toLowerCase() : c.toUpperCase()).join('');
+            }
+            else if(action === 'camel') {
+                text = text.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
+            }
+            else if(action === 'snake') {
+                text = text.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+            }
+
+            textInput.value = text;
+            charCount.textContent = \`{text.length} characters\;
+        });
+    });
+
+    copyBtn.addEventListener('click', () => {
+        textInput.select();
+        document.execCommand('copy');
+        copyBtn.innerHTML = '&#10003; Copied!';
+        setTimeout(() => copyBtn.textContent = 'Copy to Clipboard', 2000);
+    });
+</script>
+</body>
+</html>

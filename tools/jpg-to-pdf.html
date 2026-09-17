@@ -49,6 +49,12 @@
       font-weight: 600;
       text-decoration: underline;
     }
+    .preview-item {
+      cursor: grab;
+    }
+    .preview-item:active {
+      cursor: grabbing;
+    }
   </style>
 </head>
 <body>
@@ -96,7 +102,7 @@
   <input type="file" id="fileInput" accept="image/jpeg,image/jpg,image/png,image/webp" multiple style="display:none" />
 
   <!-- REORDER HINT -->
-  <p class="reorder-hint" id="reorderHint">💡 Tip: Images will appear in the PDF in the order shown below.</p>
+  <p class="reorder-hint" id="reorderHint">💡 Tip: Drag thumbnails to reorder. Images will appear in the PDF in the order shown.</p>
 
   <!-- PREVIEW GRID -->
   <div class="preview-grid" id="previewGrid"></div>
@@ -166,10 +172,10 @@
     <div class="footer-col">
       <h4>Other Tools</h4>
       <ul>
-        <li><a href="../index.html#image-tools">Image Compressor</a></li>
-        <li><a href="../index.html#image-tools">QR Code Generator</a></li>
-        <li><a href="../index.html#text-tools">Word Counter</a></li>
-        <li><a href="../index.html#dev-tools">JSON Formatter</a></li>
+        <li><a href="image-compressor.html">Image Compressor</a></li>
+        <li><a href="qr-generator.html">QR Code Generator</a></li>
+        <li><a href="word-counter.html">Word Counter</a></li>
+        <li><a href="json-formatter.html">JSON Formatter</a></li>
       </ul>
     </div>
   </div>
@@ -180,6 +186,8 @@
 
 <!-- jsPDF CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- SortableJS CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
 <script>
   // ── STATE ──
@@ -197,6 +205,19 @@
   const reorderHint = document.getElementById('reorderHint');
   const progressWrap= document.getElementById('progressWrap');
   const progressBar = document.getElementById('progressBar');
+
+  // ── INIT SORTABLE ──
+  new Sortable(previewGrid, {
+    animation: 150,
+    onEnd: function (evt) {
+      const newFiles = [];
+      Array.from(previewGrid.children).forEach(child => {
+        if (child._fileObj) newFiles.push(child._fileObj);
+      });
+      files.length = 0;
+      files.push(...newFiles);
+    }
+  });
 
   // ── HELPERS ──
   function showStatus(msg, type) {
@@ -259,10 +280,11 @@
 
   // ── RENDER PREVIEW ITEM ──
   function renderPreviewItem(index) {
-    const { file, dataUrl } = files[index];
+    const fileObj = files[index];
+    const { file, dataUrl } = fileObj;
     const item = document.createElement('div');
     item.className = 'preview-item';
-    item.dataset.index = index;
+    item._fileObj = fileObj;
 
     item.innerHTML =
       '<img src="' + dataUrl + '" alt="' + file.name + '" loading="lazy" />' +
@@ -274,7 +296,10 @@
 
     item.querySelector('.remove-btn').addEventListener('click', function(e) {
       e.stopPropagation();
-      removeFile(index);
+      const currentIndex = files.indexOf(item._fileObj);
+      if (currentIndex > -1) {
+        removeFile(currentIndex);
+      }
     });
 
     previewGrid.appendChild(item);

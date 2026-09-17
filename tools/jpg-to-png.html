@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JPG to PNG Converter - FreeToolsOnline</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    body { background: #0D0D0D; color: #fff; font-family: sans-serif; }
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .card { background: #1A1A2E; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    h1 { color: #6C63FF; text-align: center; }
+    .drop-zone { border: 2px dashed #6C63FF; padding: 40px; text-align: center; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+    .drop-zone.dragover { background: rgba(108, 99, 255, 0.2); }
+    .btn { background: #6C63FF; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; display: inline-block; margin-top: 15px; }
+    .btn:hover { opacity: 0.9; }
+    .hidden { display: none; }
+    .preview-list { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
+    .thumb { width: 100px; text-align: center; font-size: 0.8em; }
+    .thumb img { width: 100px; height: 100px; object-fit: cover; border-radius: 4px; border: 2px solid #6C63FF; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#pdf-tools">PDF Tools</a></li>
+      <li><a href="../index.html#image-tools">Image Tools</a></li>
+      <li><a href="../index.html#text-tools">Text Tools</a></li>
+      <li><a href="../index.html#dev-tools">Dev Tools</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h1>JPG to PNG</h1>
+    <div class="card">
+      <p style="text-align: center;">🔒 Your files never leave your device</p>
+      
+      <div id="dropZone" class="drop-zone">
+        <p>Drag & Drop JPG files here or click to select</p>
+        <input type="file" id="fileInput" accept="image/jpeg, image/jpg" multiple class="hidden">
+      </div>
+
+      <div id="controls" class="hidden">
+        <div class="preview-list" id="previewList"></div>
+        <button id="downloadBtn" class="btn" style="width:100%;">Convert & Download PNG</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>How to use:</h3>
+      <ol>
+        <li>Upload one or multiple JPG files.</li>
+        <li>Review the files in the preview area.</li>
+        <li>Click "Convert & Download PNG" to get your files.</li>
+        <li>If multiple files are uploaded, they will be downloaded as a ZIP archive.</li>
+      </ol>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="../index.html" class="nav-logo" style="font-size:1.15rem;">
+          <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+        </a>
+        <p>Free, fast and privacy-friendly online tools.</p>
+      </div>
+      <div class="footer-col">
+        <h4>PDF Tools</h4>
+        <ul>
+          <li><a href="jpg-to-pdf.html">JPG to PDF</a></li>
+          <li><a href="../index.html#pdf-tools">Merge PDF</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Other Tools</h4>
+        <ul>
+          <li><a href="image-compressor.html">Image Compressor</a></li>
+          <li><a href="qr-generator.html">QR Code Generator</a></li>
+          <li><a href="word-counter.html">Word Counter</a></li>
+          <li><a href="json-formatter.html">JSON Formatter</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 FreeToolsOnline.</p>
+    </div>
+  </footer>
+
+  <script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const controls = document.getElementById('controls');
+    const previewList = document.getElementById('previewList');
+    const downloadBtn = document.getElementById('downloadBtn');
+    
+    let filesData = [];
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+    fileInput.addEventListener('change', e => {
+      handleFiles(e.target.files);
+    });
+
+    function handleFiles(files) {
+      for(let f of files) {
+        if(f.type === 'image/jpeg' || f.type === 'image/jpg') {
+          const reader = new FileReader();
+          reader.onload = e => {
+            filesData.push({ name: f.name, dataUrl: e.target.result });
+            renderPreviews();
+          };
+          reader.readAsDataURL(f);
+        }
+      }
+    }
+
+    function renderPreviews() {
+      if(filesData.length > 0) controls.classList.remove('hidden');
+      previewList.innerHTML = '';
+      filesData.forEach(file => {
+        const div = document.createElement('div');
+        div.className = 'thumb';
+        div.innerHTML = \`<img src="\${file.dataUrl}" title="\${file.name}"><br>JPG → PNG\`;
+        previewList.appendChild(div);
+      });
+    }
+
+    downloadBtn.addEventListener('click', async () => {
+      downloadBtn.textContent = 'Converting...';
+      downloadBtn.disabled = true;
+      
+      const zip = new JSZip();
+      let singleBlob = null;
+      let singleName = null;
+      
+      for(let file of filesData) {
+        const img = new Image();
+        img.src = file.dataUrl;
+        await new Promise(r => img.onload = r);
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        
+        const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+        const newName = file.name.substring(0, file.name.lastIndexOf('.')) + '.png';
+        zip.file(newName, blob);
+        
+        if(filesData.length === 1) { singleBlob = blob; singleName = newName; }
+      }
+      
+      if(filesData.length === 1) {
+        saveAs(singleBlob, singleName);
+      } else {
+        const content = await zip.generateAsync({ type: 'blob' });
+        saveAs(content, 'converted_pngs.zip');
+      }
+      
+      downloadBtn.textContent = 'Convert & Download PNG';
+      downloadBtn.disabled = false;
+    });
+  </script>
+</body>
+</html>

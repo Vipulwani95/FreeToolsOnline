@@ -1,0 +1,332 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Code Generator - FreeToolsOnline</title>
+  <meta name="description" content="Generate customizable QR codes for free. No sign-up, no server uploads — 100% in your browser." />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <style>
+    .qr-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .qr-container {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+    .qr-controls {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+    .qr-preview-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      background: var(--card-bg);
+      padding: 2rem 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .form-group label {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .form-group input[type="text"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      color: var(--text);
+      font-size: 1rem;
+    }
+    .form-group input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+    }
+    .color-pickers {
+      display: flex;
+      gap: 1rem;
+    }
+    .color-picker-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+    }
+    .color-picker-group input[type="color"] {
+      width: 100%;
+      height: 40px;
+      padding: 2px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      cursor: pointer;
+    }
+    .size-selector {
+      display: flex;
+      gap: 1rem;
+    }
+    .size-selector label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: normal;
+      cursor: pointer;
+    }
+    #qrcode {
+      background: #ffffff;
+      padding: 1rem;
+      border-radius: 8px;
+      display: inline-block;
+    }
+    #qrcode img, #qrcode canvas {
+      display: block;
+      margin: 0 auto;
+    }
+    .btn-download {
+      background: var(--gradient);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: opacity 0.2s;
+    }
+    .btn-download:hover {
+      opacity: 0.9;
+    }
+    .btn-download:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo">
+    <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="../index.html#pdf-tools">PDF Tools</a></li>
+    <li><a href="../index.html#image-tools">Image Tools</a></li>
+    <li><a href="../index.html#text-tools">Text Tools</a></li>
+    <li><a href="../index.html#dev-tools">Dev Tools</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="tool-page-hero">
+  <div class="hero-badge" style="margin-bottom:1rem;">🖼️ Image Tool</div>
+  <h1>QR Code <span class="gradient-text">Generator</span></h1>
+  <p>Create customizable QR codes instantly. Everything runs locally in your browser.</p>
+</div>
+
+<!-- TOOL AREA -->
+<div class="tool-container">
+  
+  <div class="qr-container">
+    <!-- CONTROLS -->
+    <div class="qr-controls">
+      <div class="form-group">
+        <label for="qrText">URL or Text</label>
+        <input type="text" id="qrText" placeholder="https://example.com" value="https://freetoolsonline.com" />
+      </div>
+      
+      <div class="color-pickers">
+        <div class="color-picker-group">
+          <label for="colorDark">Foreground</label>
+          <input type="color" id="colorDark" value="#000000" />
+        </div>
+        <div class="color-picker-group">
+          <label for="colorLight">Background</label>
+          <input type="color" id="colorLight" value="#ffffff" />
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Size</label>
+        <div class="size-selector">
+          <label><input type="radio" name="qrSize" value="200" /> 200px</label>
+          <label><input type="radio" name="qrSize" value="300" checked /> 300px</label>
+          <label><input type="radio" name="qrSize" value="400" /> 400px</label>
+        </div>
+      </div>
+    </div>
+    
+    <!-- PREVIEW -->
+    <div class="qr-preview-pane">
+      <div id="qrcode"></div>
+      <button class="btn-download" id="downloadBtn">⬇️ Download PNG</button>
+    </div>
+  </div>
+
+  <!-- HOW-TO SECTION -->
+  <div class="howto-section">
+    <h2>📖 How to Use the QR Code Generator</h2>
+    <div class="steps-grid">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <h4>Enter Your Content</h4>
+        <p>Type or paste a URL, email address, or any text you want to convert into a QR code.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <h4>Customize Appearance</h4>
+        <p>Choose your preferred foreground and background colors. Pick a size that fits your needs.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <h4>Download the Image</h4>
+        <p>Click the download button to save your generated QR code as a PNG file directly to your device.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES NOTE -->
+  <div style="margin-top:1.5rem; padding: 1.2rem 1.5rem; background: rgba(108,99,255,0.07); border: 1px solid rgba(108,99,255,0.2); border-radius: 14px;">
+    <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.7;">
+      🔒 <strong style="color:var(--text);">Privacy First:</strong> Your text and URLs are never sent to any server. &nbsp;|&nbsp;
+      ⚡ <strong style="color:var(--text);">Fast:</strong> Generates in real-time as you type.
+    </p>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="../index.html" class="nav-logo" style="font-size:1.15rem;">
+        <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+      </a>
+      <p>Free, fast and privacy-friendly online tools. Everything runs in your browser — we never upload your files to any server.</p>
+    </div>
+    <div class="footer-col">
+      <h4>PDF Tools</h4>
+      <ul>
+        <li><a href="jpg-to-pdf.html">JPG to PDF</a></li>
+        <li><a href="../index.html#pdf-tools">Merge PDF</a></li>
+        <li><a href="../index.html#pdf-tools">Split PDF</a></li>
+        <li><a href="../index.html#pdf-tools">Rotate PDF</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Other Tools</h4>
+      <ul>
+        <li><a href="image-compressor.html">Image Compressor</a></li>
+        <li><a href="qr-generator.html">QR Code Generator</a></li>
+        <li><a href="word-counter.html">Word Counter</a></li>
+        <li><a href="json-formatter.html">JSON Formatter</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 FreeToolsOnline. Made with ❤️ for the web. All processing is done locally in your browser.</p>
+  </div>
+</footer>
+
+<!-- QRCode.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  const qrText = document.getElementById('qrText');
+  const colorDark = document.getElementById('colorDark');
+  const colorLight = document.getElementById('colorLight');
+  const sizeInputs = document.querySelectorAll('input[name="qrSize"]');
+  const qrcodeDiv = document.getElementById('qrcode');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  let qrCodeInstance = null;
+  let debounceTimer = null;
+
+  function getSelectedSize() {
+    let size = 300;
+    sizeInputs.forEach(input => {
+      if (input.checked) size = parseInt(input.value);
+    });
+    return size;
+  }
+
+  function generateQR() {
+    const text = qrText.value.trim();
+    if (!text) {
+      qrcodeDiv.innerHTML = '';
+      downloadBtn.disabled = true;
+      return;
+    }
+
+    qrcodeDiv.innerHTML = '';
+    
+    const size = getSelectedSize();
+    qrCodeInstance = new QRCode(qrcodeDiv, {
+      text: text,
+      width: size,
+      height: size,
+      colorDark: colorDark.value,
+      colorLight: colorLight.value,
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    downloadBtn.disabled = false;
+  }
+
+  function handleInputDebounced() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(generateQR, 300);
+  }
+
+  function handleDirectChange() {
+    generateQR();
+  }
+
+  qrText.addEventListener('input', handleInputDebounced);
+  colorDark.addEventListener('input', handleDirectChange);
+  colorLight.addEventListener('input', handleDirectChange);
+  sizeInputs.forEach(input => {
+    input.addEventListener('change', handleDirectChange);
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    const canvas = qrcodeDiv.querySelector('canvas');
+    if (canvas) {
+      const dataUrl = canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 'qrcode.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  });
+
+  // Initial generation
+  generateQR();
+</script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Compressor - FreeToolsOnline</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    body { background: #0D0D0D; color: #fff; font-family: sans-serif; }
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .card { background: #1A1A2E; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    h1 { color: #6C63FF; text-align: center; }
+    .drop-zone { border: 2px dashed #6C63FF; padding: 40px; text-align: center; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+    .drop-zone.dragover { background: rgba(108, 99, 255, 0.2); }
+    .preview-container { display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap; }
+    .preview-box { flex: 1; min-width: 300px; text-align: center; }
+    .preview-box img { max-width: 100%; border-radius: 4px; }
+    input[type=range] { width: 100%; margin: 10px 0; }
+    .btn { background: #6C63FF; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; display: inline-block; text-decoration: none; margin-top: 10px; }
+    .btn:hover { opacity: 0.9; }
+    .hidden { display: none; }
+    .stats { font-size: 1.1em; margin: 10px 0; color: #4CAF50; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#pdf-tools">PDF Tools</a></li>
+      <li><a href="../index.html#image-tools">Image Tools</a></li>
+      <li><a href="../index.html#text-tools">Text Tools</a></li>
+      <li><a href="../index.html#dev-tools">Dev Tools</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h1>Image Compressor</h1>
+    <div class="card">
+      <p style="text-align: center;">🔒 Your files never leave your device</p>
+      
+      <div id="dropZone" class="drop-zone">
+        <p>Drag & Drop an image here or click to select</p>
+        <input type="file" id="fileInput" accept="image/jpeg, image/png, image/webp" class="hidden">
+      </div>
+
+      <div id="controls" class="hidden" style="margin-top: 20px;">
+        <label>Quality: <span id="qualityVal">80</span>%</label>
+        <input type="range" id="qualitySlider" min="1" max="100" value="80">
+        <div class="stats" id="statsDisplay"></div>
+        <button id="downloadBtn" class="btn">Download Compressed Image</button>
+      </div>
+
+      <div id="previewArea" class="preview-container hidden">
+        <div class="preview-box">
+          <h3>Original</h3>
+          <img id="origImg">
+        </div>
+        <div class="preview-box">
+          <h3>Compressed</h3>
+          <img id="compImg">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>How to use:</h3>
+      <ol>
+        <li>Upload an image (JPG, PNG, or WEBP) using the drag & drop area.</li>
+        <li>Adjust the quality slider to find the right balance between size and quality.</li>
+        <li>Preview the original and compressed images side-by-side.</li>
+        <li>Click download to save the compressed image.</li>
+      </ol>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="../index.html" class="nav-logo" style="font-size:1.15rem;">
+          <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+        </a>
+        <p>Free, fast and privacy-friendly online tools. Everything runs in your browser — we never upload your files to any server.</p>
+      </div>
+      <div class="footer-col">
+        <h4>PDF Tools</h4>
+        <ul>
+          <li><a href="jpg-to-pdf.html">JPG to PDF</a></li>
+          <li><a href="../index.html#pdf-tools">Merge PDF</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Other Tools</h4>
+        <ul>
+          <li><a href="image-compressor.html">Image Compressor</a></li>
+          <li><a href="qr-generator.html">QR Code Generator</a></li>
+          <li><a href="word-counter.html">Word Counter</a></li>
+          <li><a href="json-formatter.html">JSON Formatter</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 FreeToolsOnline. Made with ❤️ for the web. All processing is done locally in your browser.</p>
+    </div>
+  </footer>
+
+  <script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const controls = document.getElementById('controls');
+    const previewArea = document.getElementById('previewArea');
+    const qualitySlider = document.getElementById('qualitySlider');
+    const qualityVal = document.getElementById('qualityVal');
+    const origImg = document.getElementById('origImg');
+    const compImg = document.getElementById('compImg');
+    const statsDisplay = document.getElementById('statsDisplay');
+    const downloadBtn = document.getElementById('downloadBtn');
+    
+    let currentFile = null;
+    let origImageObj = new Image();
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', e => {
+      if (e.target.files.length) handleFile(e.target.files[0]);
+    });
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024, sizes = ['Bytes', 'KB', 'MB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) return;
+      currentFile = file;
+      const reader = new FileReader();
+      reader.onload = e => {
+        origImg.src = e.target.result;
+        origImageObj.src = e.target.result;
+        origImageObj.onload = () => {
+          controls.classList.remove('hidden');
+          previewArea.classList.remove('hidden');
+          compressImage();
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    qualitySlider.addEventListener('input', () => {
+      qualityVal.textContent = qualitySlider.value;
+      if (currentFile) compressImage();
+    });
+
+    let compressedBlobURL = null;
+
+    function compressImage() {
+      const canvas = document.createElement('canvas');
+      canvas.width = origImageObj.width;
+      canvas.height = origImageObj.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(origImageObj, 0, 0);
+      
+      const q = parseInt(qualitySlider.value) / 100;
+      let mimeType = currentFile.type === 'image/png' ? 'image/jpeg' : currentFile.type;
+      
+      canvas.toBlob(blob => {
+        if (compressedBlobURL) URL.revokeObjectURL(compressedBlobURL);
+        compressedBlobURL = URL.createObjectURL(blob);
+        compImg.src = compressedBlobURL;
+        
+        const origSize = currentFile.size;
+        const compSize = blob.size;
+        const reduction = origSize > 0 ? ((origSize - compSize) / origSize * 100).toFixed(1) : 0;
+        
+        statsDisplay.textContent = \`Original: \${formatBytes(origSize)} → Compressed: \${formatBytes(compSize)} (\${reduction}% \${reduction > 0 ? 'smaller' : 'larger'})\`;
+        
+        downloadBtn.onclick = () => {
+          const a = document.createElement('a');
+          a.href = compressedBlobURL;
+          const ext = mimeType.split('/')[1];
+          const name = currentFile.name.substring(0, currentFile.name.lastIndexOf('.'));
+          a.download = \`\${name}_compressed.\${ext}\`;
+          a.click();
+        };
+      }, mimeType, q);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PNG to JPG Converter - FreeToolsOnline</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    body { background: #0D0D0D; color: #fff; font-family: sans-serif; }
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .card { background: #1A1A2E; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    h1 { color: #6C63FF; text-align: center; }
+    .drop-zone { border: 2px dashed #6C63FF; padding: 40px; text-align: center; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+    .drop-zone.dragover { background: rgba(108, 99, 255, 0.2); }
+    .btn { background: #6C63FF; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; display: inline-block; margin-top: 15px; }
+    .btn:hover { opacity: 0.9; }
+    .hidden { display: none; }
+    .preview-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+    .item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 4px; }
+    .item img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px; }
+    .item-info { flex: 1; display: flex; align-items: center; }
+    .item-actions { display: flex; align-items: center; gap: 10px; }
+    input[type=range] { margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#pdf-tools">PDF Tools</a></li>
+      <li><a href="../index.html#image-tools">Image Tools</a></li>
+      <li><a href="../index.html#text-tools">Text Tools</a></li>
+      <li><a href="../index.html#dev-tools">Dev Tools</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h1>PNG to JPG</h1>
+    <div class="card">
+      <p style="text-align: center;">🔒 Your files never leave your device</p>
+      
+      <div id="dropZone" class="drop-zone">
+        <p>Drag & Drop PNG files here or click to select</p>
+        <input type="file" id="fileInput" accept="image/png" multiple class="hidden">
+      </div>
+
+      <div id="controls" class="hidden" style="margin-top: 20px;">
+        <label>Background Color for Transparency: <input type="color" id="bgColor" value="#ffffff"></label>
+        <br>
+        <label>JPG Quality: <span id="qVal">90</span>% <input type="range" id="qSlider" min="1" max="100" value="90"></label>
+        
+        <div class="preview-list" id="previewList"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>How to use:</h3>
+      <ol>
+        <li>Upload one or multiple PNG files.</li>
+        <li>Select a background color (defaults to white for transparent PNG areas).</li>
+        <li>Set the output quality for the JPG files.</li>
+        <li>Click "Download JPG" next to each file to save it.</li>
+      </ol>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="../index.html" class="nav-logo" style="font-size:1.15rem;">
+          <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+        </a>
+        <p>Free, fast and privacy-friendly online tools.</p>
+      </div>
+      <div class="footer-col">
+        <h4>PDF Tools</h4>
+        <ul>
+          <li><a href="jpg-to-pdf.html">JPG to PDF</a></li>
+          <li><a href="../index.html#pdf-tools">Merge PDF</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Other Tools</h4>
+        <ul>
+          <li><a href="image-compressor.html">Image Compressor</a></li>
+          <li><a href="qr-generator.html">QR Code Generator</a></li>
+          <li><a href="word-counter.html">Word Counter</a></li>
+          <li><a href="json-formatter.html">JSON Formatter</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 FreeToolsOnline.</p>
+    </div>
+  </footer>
+
+  <script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const controls = document.getElementById('controls');
+    const previewList = document.getElementById('previewList');
+    const bgColor = document.getElementById('bgColor');
+    const qSlider = document.getElementById('qSlider');
+    const qVal = document.getElementById('qVal');
+    
+    let filesData = [];
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+    fileInput.addEventListener('change', e => {
+      handleFiles(e.target.files);
+    });
+
+    qSlider.addEventListener('input', () => {
+      qVal.textContent = qSlider.value;
+      updatePreviews();
+    });
+    bgColor.addEventListener('input', updatePreviews);
+
+    function formatSize(bytes) {
+      return (bytes / 1024).toFixed(1) + ' KB';
+    }
+
+    function handleFiles(files) {
+      for(let f of files) {
+        if(f.type === 'image/png') {
+          const reader = new FileReader();
+          reader.onload = e => {
+            filesData.push({ file: f, dataUrl: e.target.result, origSize: f.size });
+            updatePreviews();
+          };
+          reader.readAsDataURL(f);
+        }
+      }
+    }
+
+    async function updatePreviews() {
+      if(filesData.length > 0) controls.classList.remove('hidden');
+      previewList.innerHTML = '';
+      
+      for(let i=0; i<filesData.length; i++) {
+        let fd = filesData[i];
+        
+        const img = new Image();
+        img.src = fd.dataUrl;
+        await new Promise(r => img.onload = r);
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        
+        // Fill background
+        ctx.fillStyle = bgColor.value;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        
+        const q = parseInt(qSlider.value) / 100;
+        const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', q));
+        const url = URL.createObjectURL(blob);
+        
+        const item = document.createElement('div');
+        item.className = 'item';
+        
+        const newName = fd.file.name.substring(0, fd.file.name.lastIndexOf('.')) + '.jpg';
+        
+        item.innerHTML = \`
+          <div class="item-info">
+            <img src="\${url}">
+            <div>
+              <strong>\${fd.file.name}</strong><br>
+              \${formatSize(fd.origSize)} → \${formatSize(blob.size)}
+            </div>
+          </div>
+          <div class="item-actions">
+            <a href="\${url}" download="\${newName}" class="btn">Download JPG</a>
+          </div>
+        \`;
+        previewList.appendChild(item);
+      }
+    }
+  </script>
+</body>
+</html>
