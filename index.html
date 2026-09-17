@@ -1,0 +1,291 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FreeToolsOnline - All the Tools You Need, Completely Free</title>
+  <meta name="description" content="Free online tools for PDF, images, text and developers. No sign-up needed. 100% browser-based." />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#pdf-tools">PDF Tools</a></li>
+    <li><a href="#image-tools">Image Tools</a></li>
+    <li><a href="#text-tools">Text Tools</a></li>
+    <li><a href="#dev-tools">Dev Tools</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">✨ 100% Free · No Sign-up · Browser Based</div>
+  <h1>All the Tools You Need,<br /><span class="gradient-text">Completely Free</span></h1>
+  <p>Powerful online tools for PDF, images, text and more. No account required — everything runs right in your browser.</p>
+
+  <!-- SEARCH BAR -->
+  <div class="search-wrapper">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Search tools... e.g. PDF, compressor, JSON" autocomplete="off" />
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-number">15+</div>
+      <div class="stat-label">Free Tools</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">100%</div>
+      <div class="stat-label">Browser-Based</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">0</div>
+      <div class="stat-label">Sign-up Needed</div>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN TOOLS -->
+<main class="main-content">
+
+  <!-- NO RESULTS -->
+  <p id="noResults" style="display:none; text-align:center; color:var(--text-muted); font-size:1rem; padding:2rem 0;">
+    😔 No tools found matching your search. Try a different keyword.
+  </p>
+
+  <!-- PDF TOOLS -->
+  <section class="tools-section" id="pdf-tools" data-section>
+    <div class="section-header">
+      <div class="section-bar purple"></div>
+      <h2>📄 PDF Tools</h2>
+    </div>
+    <div class="tools-grid">
+
+      <a href="tools/jpg-to-pdf.html" class="tool-card" data-name="JPG to PDF convert images jpg png webp">
+        <div class="tool-icon icon-red">🖼️</div>
+        <h3>JPG to PDF</h3>
+        <p>Convert JPG, PNG or WebP images into a high-quality PDF file instantly.</p>
+        <div class="card-footer">
+          <span class="badge-active">● Active</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <div class="tool-card coming-soon" data-name="Merge PDF combine">
+        <div class="tool-icon icon-purple">📎</div>
+        <h3>Merge PDF</h3>
+        <p>Combine multiple PDF files into one single document with ease.</p>
+        <div class="card-footer">
+          <span class="badge-soon">⏳ Coming Soon</span>
+        </div>
+      </div>
+
+      <div class="tool-card coming-soon" data-name="Split PDF pages">
+        <div class="tool-icon icon-blue">✂️</div>
+        <h3>Split PDF</h3>
+        <p>Extract specific pages or split a PDF into separate smaller files.</p>
+        <div class="card-footer">
+          <span class="badge-soon">⏳ Coming Soon</span>
+        </div>
+      </div>
+
+      <div class="tool-card coming-soon" data-name="Rotate PDF pages">
+        <div class="tool-icon icon-orange">🔄</div>
+        <h3>Rotate PDF</h3>
+        <p>Rotate pages in your PDF clockwise, counter-clockwise or flip them.</p>
+        <div class="card-footer">
+          <span class="badge-soon">⏳ Coming Soon</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- IMAGE TOOLS -->
+  <section class="tools-section" id="image-tools" data-section>
+    <div class="section-header">
+      <div class="section-bar pink"></div>
+      <h2>🖼️ Image Tools</h2>
+    </div>
+    <div class="tools-grid">
+
+      <div class="tool-card coming-soon" data-name="Image Compressor reduce size optimize photo">
+        <div class="tool-icon icon-green">🗜️</div>
+        <h3>Image Compressor</h3>
+        <p>Compress JPG, PNG and WebP images without losing visible quality.</p>
+        <div class="card-footer">
+          <span class="badge-soon">⏳ Coming Soon</span>
+        </div>
+      </div>
+
+      <div class="tool-card coming-soon" data-name="Image Converter format png jpg webp">
+        <div class="tool-icon icon-pink">🔁</div>
+        <h3>Image Converter</h3>
+        <p>Convert between PNG, JPG, WebP, GIF and other image formats.</p>
+        <div class="card-footer">
+          <span class="badge-soon">⏳ Coming Soon</span>
+        </div>
+      </div>
+
+      <div class="tool-card coming-soon" data-name="Resize Image dimensions width height">
+        <div class="tool-icon icon-teal">📐</div>
+        <h3>Resize Image</h3>
+        <p>Resize images to exact pixel dimensions or scale by percentage.</p>
+        <div class="card-footer">
+          <span class="badge-soon">⏳ Coming Soon</span>
+        </div>
+      </div>
+
+      <div class="tool-card coming-soon" data-name="QR Code Generator barcode">
+        <div class="tool-icon icon-indigo">📱</div>
+        <h3>QR Code Generator</h3>
+        <p>Generate QR codes from any URL, text or contact information.</p>
+        <div class="card-footer">
+          <span class="badge-soon">⏳ Coming Soon</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TEXT TOOLS -->
+  <section class="tools-section" id="text-tools" data-section>
+    <div class="section-header">
+      <div class="section-bar blue"></div>
+      <h2>📝 Text Tools</h2>
+    </div>
+    <div class="tools-grid">
+
+      <div class="tool-card coming-soon" data-name="Word Counter character count text analyze">
+        <div class="tool-icon icon-blue">🔢</div>
+        <h3>Word Counter</h3>
+        <p>Count words, characters, sentences and paragraphs in any text.</p>
+        <div class="card-footer">
+          <span class="badge-soon">⏳ Coming Soon</span>
+        </div>
+      </div>
+
+      <div class="tool-card coming-soon" data-name="Case Converter uppercase lowercase text">
+        <div class="tool-icon icon-purple">Aa</div>
+        <h3>Case Converter</h3>
+        <p>Convert text to UPPERCASE, lowercase, Title Case or camelCase.</p>
+        <div class="card-footer">
+          <span class="badge-soon">⏳ Coming Soon</span>
+        </div>
+      </div>
+
+      <div class="tool-card coming-soon" data-name="Password Generator secure random">
+        <div class="tool-icon icon-orange">🔑</div>
+        <h3>Password Generator</h3>
+        <p>Generate strong, secure random passwords with custom rules.</p>
+        <div class="card-footer">
+          <span class="badge-soon">⏳ Coming Soon</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DEV TOOLS -->
+  <section class="tools-section" id="dev-tools" data-section>
+    <div class="section-header">
+      <div class="section-bar green"></div>
+      <h2>💻 Developer Tools</h2>
+    </div>
+    <div class="tools-grid">
+
+      <div class="tool-card coming-soon" data-name="JSON Formatter validator beautify pretty print">
+        <div class="tool-icon icon-green">{ }</div>
+        <h3>JSON Formatter</h3>
+        <p>Beautify, minify and validate JSON data with syntax highlighting.</p>
+        <div class="card-footer">
+          <span class="badge-soon">⏳ Coming Soon</span>
+        </div>
+      </div>
+
+      <div class="tool-card coming-soon" data-name="Base64 Encoder Decoder encode decode">
+        <div class="tool-icon icon-indigo">64</div>
+        <h3>Base64 Encoder</h3>
+        <p>Encode or decode Base64 strings and file data instantly online.</p>
+        <div class="card-footer">
+          <span class="badge-soon">⏳ Coming Soon</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo" style="font-size:1.15rem;">
+        <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+      </a>
+      <p>Free, fast and privacy-friendly online tools. Everything runs in your browser — we never upload your files to any server.</p>
+    </div>
+    <div class="footer-col">
+      <h4>PDF Tools</h4>
+      <ul>
+        <li><a href="tools/jpg-to-pdf.html">JPG to PDF</a></li>
+        <li><a href="#">Merge PDF</a></li>
+        <li><a href="#">Split PDF</a></li>
+        <li><a href="#">Rotate PDF</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Other Tools</h4>
+      <ul>
+        <li><a href="#">Image Compressor</a></li>
+        <li><a href="#">QR Code Generator</a></li>
+        <li><a href="#">Word Counter</a></li>
+        <li><a href="#">JSON Formatter</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 FreeToolsOnline. Made with ❤️ for the web. All processing is done locally in your browser.</p>
+  </div>
+</footer>
+
+<!-- LIVE SEARCH SCRIPT -->
+<script>
+  const searchInput = document.getElementById('searchInput');
+  const noResults   = document.getElementById('noResults');
+
+  searchInput.addEventListener('input', function () {
+    const q = this.value.toLowerCase().trim();
+    const cards    = document.querySelectorAll('.tool-card');
+    const sections = document.querySelectorAll('.tools-section[data-section]');
+    let totalVisible = 0;
+
+    cards.forEach(card => {
+      const name = (card.dataset.name || card.querySelector('h3').textContent).toLowerCase();
+      const show = !q || name.includes(q);
+      card.style.display = show ? '' : 'none';
+      if (show) totalVisible++;
+    });
+
+    // Hide empty sections
+    sections.forEach(section => {
+      const visibleCards = section.querySelectorAll('.tool-card:not([style*="display: none"]):not([style*="display:none"])');
+      section.style.display = visibleCards.length === 0 ? 'none' : '';
+    });
+
+    noResults.style.display = (totalVisible === 0 && q) ? 'block' : 'none';
+  });
+</script>
+
+</body>
+</html>
