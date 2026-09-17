@@ -23,14 +23,15 @@
   </ul>
 </nav>
 
-<!-- PRIVACY TRUST BAR -->
-<div class="trust-bar">
-  <div class="trust-bar-inner">
-    <span class="trust-item">🔒 Your files are <strong>never uploaded</strong> to any server</span>
-    <span class="trust-divider">|</span>
-    <span class="trust-item">🖥️ All processing happens <strong>100% in your browser</strong></span>
-    <span class="trust-divider">|</span>
-    <span class="trust-item">🗑️ Files are <strong>never stored or shared</strong> — completely private</span>
+<!-- PRIVACY TICKER -->
+<div class="trust-ticker" id="trustTicker">
+  <div class="ticker-track">
+    <span>🔒 Your files are NEVER uploaded to our server — Be Happy, You're at the Right Place! &nbsp;&nbsp;&nbsp;✨&nbsp;&nbsp;&nbsp;</span>
+    <span>🛡️ Zero data stored. Zero data shared. 100% private — just the way it should be! &nbsp;&nbsp;&nbsp;✨&nbsp;&nbsp;&nbsp;</span>
+    <span>🚀 All tools are completely FREE with no sign-up — Welcome to your new favourite website! &nbsp;&nbsp;&nbsp;✨&nbsp;&nbsp;&nbsp;</span>
+    <span>🔒 Your files are NEVER uploaded to our server — Be Happy, You're at the Right Place! &nbsp;&nbsp;&nbsp;✨&nbsp;&nbsp;&nbsp;</span>
+    <span>🛡️ Zero data stored. Zero data shared. 100% private — just the way it should be! &nbsp;&nbsp;&nbsp;✨&nbsp;&nbsp;&nbsp;</span>
+    <span>🚀 All tools are completely FREE with no sign-up — Welcome to your new favourite website! &nbsp;&nbsp;&nbsp;✨&nbsp;&nbsp;&nbsp;</span>
   </div>
 </div>
 
@@ -296,6 +297,16 @@
 
     noResults.style.display = (totalVisible === 0 && q) ? 'block' : 'none';
   });
+
+  // Hide ticker on scroll, show when back at top
+  const ticker = document.getElementById('trustTicker');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 80) {
+      ticker.classList.add('hidden');
+    } else {
+      ticker.classList.remove('hidden');
+    }
+  }, { passive: true });
 </script>
 
 </body>
