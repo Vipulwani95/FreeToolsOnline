@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merge PDF - FreeToolsOnline</title>
+  <meta name="description" content="Merge multiple PDF files online for free. No sign-up, no upload — 100% in your browser." />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <style>
+    .reorder-hint {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+      display: none;
+    }
+    .reorder-hint.visible { display: block; }
+    .drop-zone.has-files {
+      border-style: solid;
+      border-color: rgba(108,99,255,0.4);
+      padding: 1.5rem;
+    }
+    .drop-zone.has-files .dz-main { display: none; }
+    .drop-zone.has-files .dz-add  { display: block; }
+    .dz-add {
+      display: none;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .dz-add span {
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+    .preview-item {
+      cursor: grab;
+    }
+    .preview-item:active {
+      cursor: grabbing;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo">
+    <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="../index.html#pdf-tools">PDF Tools</a></li>
+    <li><a href="../index.html#image-tools">Image Tools</a></li>
+    <li><a href="../index.html#text-tools">Text Tools</a></li>
+    <li><a href="../index.html#dev-tools">Dev Tools</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="tool-page-hero">
+  <div class="hero-badge" style="margin-bottom:1rem;">📄 PDF Tool</div>
+  <h1><span class="gradient-text">Merge</span> PDF Files</h1>
+  <p>Combine multiple PDFs into a single document instantly — completely free, no sign-up, nothing uploaded to any server.</p>
+</div>
+
+<!-- TOOL AREA -->
+<div class="tool-container">
+  <div class="status-msg" id="statusMsg"></div>
+
+  <div class="drop-zone" id="dropZone">
+    <div class="dz-main">
+      <div class="dz-icon">📂</div>
+      <h3>Drag &amp; Drop PDF files here or click to browse</h3>
+      <p>Supports multiple PDF files</p>
+      <div class="dz-btn" id="browseBtn">Browse Files</div>
+    </div>
+    <div class="dz-add">
+      ➕ <span id="addMoreBtn">Add more PDFs</span>
+    </div>
+  </div>
+
+  <input type="file" id="fileInput" accept="application/pdf" multiple style="display:none" />
+
+  <p class="reorder-hint" id="reorderHint">💡 Tip: Drag items to reorder. Files will be merged in the order shown.</p>
+
+  <div class="preview-grid" id="previewGrid"></div>
+
+  <div class="action-bar">
+    <button class="btn-convert" id="convertBtn" disabled>⬇️ Merge PDFs</button>
+    <button class="btn-clear" id="clearBtn" style="display:none">🗑️ Clear All</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="../index.html" class="nav-logo" style="font-size:1.15rem;">
+        <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+      </a>
+      <p>Free, fast and privacy-friendly online tools. Everything runs in your browser — we never upload your files to any server.</p>
+    </div>
+    <div class="footer-col">
+      <h4>PDF Tools</h4>
+      <ul>
+        <li><a href="jpg-to-pdf.html">JPG to PDF</a></li>
+        <li><a href="merge-pdf.html">Merge PDF</a></li>
+        <li><a href="split-pdf.html">Split PDF</a></li>
+        <li><a href="rotate-pdf.html">Rotate PDF</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script>
+  const files = [];
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const previewGrid = document.getElementById('previewGrid');
+  const convertBtn = document.getElementById('convertBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const statusMsg = document.getElementById('statusMsg');
+
+  new Sortable(previewGrid, {
+    animation: 150,
+    onEnd: function () {
+      const newFiles = [];
+      Array.from(previewGrid.children).forEach(child => {
+        if (child._fileObj) newFiles.push(child._fileObj);
+      });
+      files.length = 0;
+      files.push(...newFiles);
+    }
+  });
+
+  function showStatus(msg, type) {
+    statusMsg.textContent = msg;
+    statusMsg.className = 'status-msg ' + type;
+    statusMsg.style.display = 'block';
+  }
+  function hideStatus() { statusMsg.style.display = 'none'; }
+
+  function updateUI() {
+    const hasFiles = files.length > 0;
+    convertBtn.disabled = !hasFiles;
+    clearBtn.style.display = hasFiles ? 'inline-flex' : 'none';
+    document.getElementById('reorderHint').classList.toggle('visible', hasFiles);
+    dropZone.classList.toggle('has-files', hasFiles);
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+
+  function addFiles(newFiles) {
+    hideStatus();
+    for (const f of newFiles) {
+      if (f.type !== 'application/pdf') {
+        showStatus('⚠️ Skipped "' + f.name + '" — only PDF files are supported.', 'error');
+        continue;
+      }
+      files.push({ file: f });
+      renderPreviewItem(files.length - 1);
+    }
+    updateUI();
+  }
+
+  function renderPreviewItem(index) {
+    const fileObj = files[index];
+    const item = document.createElement('div');
+    item.className = 'preview-item';
+    item._fileObj = fileObj;
+    item.innerHTML = `
+      <div style="font-size: 2rem; text-align: center; padding: 10px;">📄</div>
+      <button class="remove-btn" title="Remove">✕</button>
+      <div class="preview-info">
+        <div class="file-name" style="word-break: break-all;">${fileObj.file.name}</div>
+        <div class="file-size">${formatSize(fileObj.file.size)}</div>
+      </div>
+    `;
+    item.querySelector('.remove-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const currentIndex = files.indexOf(item._fileObj);
+      if (currentIndex > -1) {
+        files.splice(currentIndex, 1);
+        item.remove();
+        updateUI();
+      }
+    });
+    previewGrid.appendChild(item);
+  }
+
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    files.length = 0;
+    previewGrid.innerHTML = '';
+    updateUI();
+    hideStatus();
+  });
+
+  convertBtn.addEventListener('click', async () => {
+    if (files.length < 2) {
+      showStatus('⚠️ Please add at least 2 PDF files to merge.', 'error');
+      return;
+    }
+    convertBtn.disabled = true;
+    showStatus('⏳ Merging PDFs... please wait.', 'info');
+    try {
+      const mergedPdf = await PDFLib.PDFDocument.create();
+      for (const f of files) {
+        const arrayBuffer = await f.file.arrayBuffer();
+        const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+        const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+        copiedPages.forEach((page) => mergedPdf.addPage(page));
+      }
+      const pdfBytes = await mergedPdf.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'merged.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+      showStatus('✅ PDFs merged successfully!', 'success');
+    } catch (err) {
+      showStatus('❌ Error: ' + err.message, 'error');
+    } finally {
+      convertBtn.disabled = false;
+    }
+  });
+
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eName => {
+    window.addEventListener(eName, e => { e.preventDefault(); e.stopPropagation(); }, false);
+  });
+  dropZone.addEventListener('dragover', () => dropZone.classList.add('drag-over'));
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length) addFiles([...e.dataTransfer.files]);
+  });
+  dropZone.addEventListener('click', e => {
+    if (!e.target.closest('#addMoreBtn')) fileInput.click();
+  });
+  document.getElementById('browseBtn').addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
+  document.getElementById('addMoreBtn').addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) { addFiles([...fileInput.files]); fileInput.value = ''; }
+  });
+</script>
+</body>
+</html>
