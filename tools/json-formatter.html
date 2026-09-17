@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -128,7 +128,7 @@
 
     function updateLineCount() {
       const lines = inputArea.value.split('\n').length;
-      lineCount.textContent = `Lines: $`;
+      lineCount.textContent = `Lines: ${lines}`;
     }
 
     inputArea.addEventListener('input', updateLineCount);
