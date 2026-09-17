@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -390,12 +390,21 @@
   }
 
   // ── DRAG & DROP ──
-  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  // Prevent default drag behaviors globally so dropping outside doesn't open the file
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    window.addEventListener(eventName, e => {
+      e.preventDefault();
+      e.stopPropagation();
+    }, false);
+  });
+
+  dropZone.addEventListener('dragover', () => dropZone.classList.add('drag-over'));
   dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
   dropZone.addEventListener('drop', e => {
-    e.preventDefault();
     dropZone.classList.remove('drag-over');
-    addFiles([...e.dataTransfer.files]);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      addFiles([...e.dataTransfer.files]);
+    }
   });
 
   dropZone.addEventListener('click', e => {
