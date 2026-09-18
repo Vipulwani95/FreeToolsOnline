@@ -133,7 +133,7 @@
 <script>
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
-    const canvas = document.getElementById('canvas');
+    const canvas = document.getElementById('previewCanvas');
     const ctx = canvas.getContext('2d');
     const originalSize = document.getElementById('originalSize');
     const newSize = document.getElementById('newSize');
@@ -141,7 +141,7 @@
     const widthInput = document.getElementById('widthInput');
     const heightInput = document.getElementById('heightInput');
     const lockAspect = document.getElementById('lockAspect');
-    const radioModes = document.getElementsByName('mode');
+    const radioModes = document.getElementsByName('resizeMode');
     const pixelMode = document.getElementById('pixelMode');
     const percentMode = document.getElementById('percentMode');
     const scaleSlider = document.getElementById('scaleSlider');
