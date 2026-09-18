@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.jsdelivr.net/gh/gzuidhof/coi-serviceworker@master/coi-serviceworker.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video to GIF - FreeToolsOnline</title>
+  <meta name="description" content="Convert short video to GIF files. Free, fast, and completely in your browser." />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>?</text></svg>" />
+  <style>
+    .drop-zone.has-files { border-style: solid; border-color: rgba(108,99,255,0.4); padding: 1.5rem; }
+    .drop-zone.has-files .dz-main { display: none; }
+    .drop-zone.has-files .dz-add  { display: block; }
+    .dz-add { display: none; font-size: 0.85rem; color: var(--text-muted); }
+    .dz-add span { color: var(--primary); cursor: pointer; font-weight: 600; text-decoration: underline; }
+    .progress-text { text-align: center; margin-top: 10px; font-weight: bold; color: var(--primary); }
+    .warning { text-align: center; color: #ff9800; font-size: 0.9rem; margin-top: 10px; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo"><span class="logo-free">? FreeTools</span><span class="logo-online">Online</span></a>
+  <ul class="nav-links">
+    <li><a href="../index.html#video-tools">Video Tools</a></li>
+    <li><a href="../index.html#pdf-tools">PDF Tools</a></li>
+  </ul>
+</nav>
+<div class="tool-page-hero">
+  <div class="hero-badge" style="margin-bottom:1rem;">?? Video Tool</div>
+  <h1>Video to <span class="gradient-text">GIF</span></h1>
+  <p>Convert short video to GIF instantly.</p>
+</div>
+<div class="tool-container">
+  <div class="status-msg" id="statusMsg"></div>
+  <div class="drop-zone" id="dropZone">
+    <div class="dz-main">
+      <div class="dz-icon">??</div>
+      <h3>Drag &amp; Drop video here or click to browse</h3>
+      <p>Supports MP4, WebM</p>
+      <div class="dz-btn" id="browseBtn">Browse Files</div>
+    </div>
+    <div class="dz-add">?? <span id="addMoreBtn">Select a different video</span></div>
+  </div>
+  <div class="warning">?? Keep videos under 10 seconds for best results</div>
+  <input type="file" id="fileInput" accept="video/mp4,video/webm" style="display:none" />
+  <div class="progress-text" id="progressText" style="display:none">Loading FFmpeg...</div>
+  <div class="action-bar"><button class="btn-convert" id="convertBtn" disabled>?? Convert to GIF</button></div>
+</div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="../index.html" class="nav-logo" style="font-size:1.15rem;"><span class="logo-free">? FreeTools</span><span class="logo-online">Online</span></a>
+    </div>
+  </div>
+</footer>
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+<script>
+  const { createFFmpeg, fetchFile } = FFmpeg;
+  const ffmpeg = createFFmpeg({ log: true });
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const convertBtn = document.getElementById('convertBtn');
+  const statusMsg = document.getElementById('statusMsg');
+  const progressText = document.getElementById('progressText');
+  let selectedFile = null;
+
+  function showStatus(msg, type) { statusMsg.textContent = msg; statusMsg.className = 'status-msg ' + type; statusMsg.style.display = 'block'; }
+  function handleFile(file) {
+    if (!file.type.startsWith('video/')) return;
+    selectedFile = file;
+    dropZone.classList.add('has-files');
+    convertBtn.disabled = false;
+    document.querySelector('.dz-add').innerHTML = '?? Selected: ' + file.name + ' - <span id="addMoreBtn2">Change</span>';
+    document.getElementById('addMoreBtn2').addEventListener('click', () => fileInput.click());
+  }
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); });
+  dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
+  dropZone.addEventListener('click', e => { if (e.target.tagName !== 'SPAN') fileInput.click(); });
+  fileInput.addEventListener('change', () => { if (fileInput.files.length) handleFile(fileInput.files[0]); });
+  document.getElementById('browseBtn').addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
+
+  convertBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+    convertBtn.disabled = true;
+    progressText.style.display = 'block';
+    try {
+      if (!ffmpeg.isLoaded()) { progressText.innerText = 'Loading FFmpeg...'; await ffmpeg.load(); }
+      progressText.innerText = 'Converting to GIF...';
+      ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(selectedFile));
+      await ffmpeg.run('-i', 'input.mp4', '-vf', 'fps=10,scale=320:-1:flags=lanczos', '-c:v', 'gif', 'output.gif');
+      const data = ffmpeg.FS('readFile', 'output.gif');
+      const url = URL.createObjectURL(new Blob([data.buffer], { type: 'image/gif' }));
+      const a = document.createElement('a');
+      a.href = url; a.download = 'converted.gif'; a.click();
+      progressText.style.display = 'none';
+      showStatus('? GIF converted successfully!', 'success');
+    } catch (err) {
+      showStatus('? Error: ' + err.message, 'error'); progressText.style.display = 'none';
+    } finally { convertBtn.disabled = false; }
+  });
+</script>
+</body>
+</html>

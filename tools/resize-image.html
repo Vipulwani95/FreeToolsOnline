@@ -62,6 +62,25 @@
                 <label><input type="radio" name="resizeMode" value="percentage"> By Percentage</label>
             </div>
 
+            <div style="margin-bottom: 1rem;">
+                <label for="presetSelect">Social Media Presets</label>
+                <select id="presetSelect" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #444; background: #0D0D0D; color: #fff;">
+                    <option value="">-- Choose a preset --</option>
+                    <option value="1080x1080">Instagram Post (1080 x 1080)</option>
+                    <option value="1080x1350">Instagram Portrait (1080 x 1350)</option>
+                    <option value="1080x1920">Instagram Story/Reel (1080 x 1920)</option>
+                    <option value="320x320">Instagram Profile (320 x 320)</option>
+                    <option value="1200x630">Facebook Post (1200 x 630)</option>
+                    <option value="170x170">Facebook Profile (170 x 170)</option>
+                    <option value="820x312">Facebook Cover (820 x 312)</option>
+                    <option value="1200x675">Twitter Post (1200 x 675)</option>
+                    <option value="400x400">Twitter Profile (400 x 400)</option>
+                    <option value="1500x500">Twitter Header (1500 x 500)</option>
+                    <option value="1200x627">LinkedIn Post (1200 x 627)</option>
+                    <option value="1280x720">YouTube Thumbnail (1280 x 720)</option>
+                </select>
+            </div>
+
             <div id="pixelMode" class="mode-section active">
                 <div class="aspect-lock">
                     <input type="checkbox" id="lockAspect" checked>
@@ -206,13 +225,30 @@
     });
 
     // Inputs
+    const presetSelect = document.getElementById('presetSelect');
+    presetSelect.addEventListener('change', (e) => {
+        if(!e.target.value) return;
+        const [w, h] = e.target.value.split('x');
+        // Switch to pixel mode automatically
+        radioModes[0].checked = true;
+        pixelMode.classList.add('active');
+        percentMode.classList.remove('active');
+        
+        lockAspect.checked = false; // Disable lock so exact dimensions are applied
+        widthInput.value = w;
+        heightInput.value = h;
+        updateCanvas();
+    });
+
     widthInput.addEventListener('input', () => {
+        presetSelect.value = ''; // Clear preset on manual edit
         if(lockAspect.checked && widthInput.value) {
             heightInput.value = Math.round(widthInput.value / aspectRatio);
         }
         updateCanvas();
     });
     heightInput.addEventListener('input', () => {
+        presetSelect.value = ''; // Clear preset on manual edit
         if(lockAspect.checked && heightInput.value) {
             widthInput.value = Math.round(heightInput.value * aspectRatio);
         }

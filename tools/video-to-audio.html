@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.jsdelivr.net/gh/gzuidhof/coi-serviceworker@master/coi-serviceworker.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video to Audio (MP3) - FreeToolsOnline</title>
+  <meta name="description" content="Extract MP3 audio from MP4 and WebM videos. Free, fast, and completely in your browser." />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>?</text></svg>" />
+  <style>
+    .drop-zone.has-files {
+      border-style: solid;
+      border-color: rgba(108,99,255,0.4);
+      padding: 1.5rem;
+    }
+    .drop-zone.has-files .dz-main { display: none; }
+    .drop-zone.has-files .dz-add  { display: block; }
+    .dz-add {
+      display: none;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .dz-add span {
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+    .progress-text {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo">
+    <span class="logo-free">? FreeTools</span><span class="logo-online">Online</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="../index.html#video-tools">Video Tools</a></li>
+    <li><a href="../index.html#pdf-tools">PDF Tools</a></li>
+    <li><a href="../index.html#image-tools">Image Tools</a></li>
+    <li><a href="../index.html#text-tools">Text Tools</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="tool-page-hero">
+  <div class="hero-badge" style="margin-bottom:1rem;">?? Video Tool</div>
+  <h1>Video to <span class="gradient-text">Audio (MP3)</span></h1>
+  <p>Extract MP3 audio from any video instantly — completely free, no sign-up, nothing uploaded to any server.</p>
+</div>
+
+<!-- TOOL AREA -->
+<div class="tool-container">
+
+  <!-- STATUS MESSAGE -->
+  <div class="status-msg" id="statusMsg"></div>
+
+  <!-- DROP ZONE -->
+  <div class="drop-zone" id="dropZone">
+    <div class="dz-main">
+      <div class="dz-icon">??</div>
+      <h3>Drag &amp; Drop video here or click to browse</h3>
+      <p>Supports MP4, WebM</p>
+      <div class="dz-btn" id="browseBtn">Browse Files</div>
+    </div>
+    <div class="dz-add">
+      ?? <span id="addMoreBtn">Select a different video</span>
+    </div>
+  </div>
+
+  <!-- HIDDEN FILE INPUT -->
+  <input type="file" id="fileInput" accept="video/mp4,video/webm" style="display:none" />
+  
+  <div class="progress-text" id="progressText" style="display:none">Loading FFmpeg...</div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="action-bar">
+    <button class="btn-convert" id="convertBtn" disabled>?? Extract MP3</button>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="../index.html" class="nav-logo" style="font-size:1.15rem;">
+        <span class="logo-free">? FreeTools</span><span class="logo-online">Online</span>
+      </a>
+      <p>Free, fast and privacy-friendly online tools. Everything runs in your browser — we never upload your files to any server.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+<script>
+  const { createFFmpeg, fetchFile } = FFmpeg;
+  const ffmpeg = createFFmpeg({ log: true });
+
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const browseBtn = document.getElementById('browseBtn');
+  const addMoreBtn = document.getElementById('addMoreBtn');
+  const convertBtn = document.getElementById('convertBtn');
+  const statusMsg = document.getElementById('statusMsg');
+  const progressText = document.getElementById('progressText');
+
+  let selectedFile = null;
+
+  function showStatus(msg, type) {
+    statusMsg.textContent = msg;
+    statusMsg.className = 'status-msg ' + type;
+    statusMsg.style.display = 'block';
+  }
+  function hideStatus() { statusMsg.style.display = 'none'; }
+
+  function handleFile(file) {
+    if (!file.type.startsWith('video/')) {
+      showStatus('?? Skipped "' + file.name + '" — only video files are supported.', 'error');
+      return;
+    }
+    selectedFile = file;
+    hideStatus();
+    dropZone.classList.add('has-files');
+    convertBtn.disabled = false;
+    document.querySelector('.dz-add').innerHTML = '?? Selected: ' + file.name + ' - <span id="addMoreBtn2">Change</span>';
+    document.getElementById('addMoreBtn2').addEventListener('click', () => fileInput.click());
+  }
+
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); });
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+  });
+  
+  dropZone.addEventListener('click', e => {
+    if (e.target.tagName !== 'SPAN') fileInput.click();
+  });
+  browseBtn.addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) handleFile(fileInput.files[0]);
+  });
+
+  convertBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+    convertBtn.disabled = true;
+    progressText.style.display = 'block';
+    
+    try {
+      if (!ffmpeg.isLoaded()) {
+        progressText.innerText = 'Loading FFmpeg...';
+        await ffmpeg.load();
+      }
+      progressText.innerText = 'Extracting audio...';
+      
+      ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(selectedFile));
+      await ffmpeg.run('-i', 'input.mp4', '-q:a', '0', '-map', 'a', 'output.mp3');
+      const data = ffmpeg.FS('readFile', 'output.mp3');
+      
+      const url = URL.createObjectURL(new Blob([data.buffer], { type: 'audio/mp3' }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'extracted_audio.mp3';
+      a.click();
+      
+      progressText.style.display = 'none';
+      showStatus('? MP3 extracted successfully!', 'success');
+    } catch (err) {
+      showStatus('? Error: ' + err.message, 'error');
+      progressText.style.display = 'none';
+    } finally {
+      convertBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
