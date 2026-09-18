@@ -1,104 +1,199 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://cdn.jsdelivr.net/gh/gzuidhof/coi-serviceworker@master/coi-serviceworker.js"></script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Video to GIF - FreeToolsOnline</title>
-  <meta name="description" content="Convert short video to GIF files. Free, fast, and completely in your browser." />
-  <link rel="stylesheet" href="../assets/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>?</text></svg>" />
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
   <style>
-    .drop-zone.has-files { border-style: solid; border-color: rgba(108,99,255,0.4); padding: 1.5rem; }
+    .progress-bar-wrap { background: rgba(91,79,232,0.1); border-radius: 8px; height: 8px; overflow: hidden; margin-top: 15px; display: none; }
+    .progress-bar { height: 100%; background: var(--gradient); border-radius: 8px; transition: width 0.3s ease; width: 0%; }
+    .progress-text { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 8px; display: none; }
+    .drop-zone.has-files { border-style: solid; border-color: rgba(91,79,232,0.4); padding: 1.5rem; }
     .drop-zone.has-files .dz-main { display: none; }
     .drop-zone.has-files .dz-add  { display: block; }
     .dz-add { display: none; font-size: 0.85rem; color: var(--text-muted); }
     .dz-add span { color: var(--primary); cursor: pointer; font-weight: 600; text-decoration: underline; }
-    .progress-text { text-align: center; margin-top: 10px; font-weight: bold; color: var(--primary); }
-    .warning { text-align: center; color: #ff9800; font-size: 0.9rem; margin-top: 10px; }
   </style>
 </head>
 <body>
+
 <nav class="navbar">
-  <a href="../index.html" class="nav-logo"><span class="logo-free">? FreeTools</span><span class="logo-online">Online</span></a>
+  <a href="../index.html" class="nav-logo">
+    <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+  </a>
   <ul class="nav-links">
     <li><a href="../index.html#video-tools">Video Tools</a></li>
     <li><a href="../index.html#pdf-tools">PDF Tools</a></li>
+    <li><a href="../index.html#image-tools">Image Tools</a></li>
+    <li><a href="../index.html#text-tools">Text Tools</a></li>
   </ul>
 </nav>
+
 <div class="tool-page-hero">
-  <div class="hero-badge" style="margin-bottom:1rem;">?? Video Tool</div>
+  <div class="hero-badge" style="margin-bottom:1rem;">🎬 Video Tool</div>
   <h1>Video to <span class="gradient-text">GIF</span></h1>
-  <p>Convert short video to GIF instantly.</p>
+  <p>Convert short video clips into GIFs entirely in your browser.</p>
 </div>
+
 <div class="tool-container">
   <div class="status-msg" id="statusMsg"></div>
+  
+  <div style="background:rgba(255,179,71,0.1); border:1px solid rgba(255,179,71,0.3); color:var(--warning); padding:1rem; border-radius:8px; margin-bottom:1.5rem; font-size:0.9rem;">
+    ⚠️ <strong>Best Practice:</strong> Keep videos under 10 seconds for fast processing. Long videos will take a very long time to convert and may crash.
+  </div>
+
   <div class="drop-zone" id="dropZone">
     <div class="dz-main">
-      <div class="dz-icon">??</div>
+      <div class="dz-icon">🎞️</div>
       <h3>Drag &amp; Drop video here or click to browse</h3>
-      <p>Supports MP4, WebM</p>
+      <p>Supports MP4, WebM (Short clips only)</p>
       <div class="dz-btn" id="browseBtn">Browse Files</div>
     </div>
-    <div class="dz-add">?? <span id="addMoreBtn">Select a different video</span></div>
-  </div>
-  <div class="warning">?? Keep videos under 10 seconds for best results</div>
-  <input type="file" id="fileInput" accept="video/mp4,video/webm" style="display:none" />
-  <div class="progress-text" id="progressText" style="display:none">Loading FFmpeg...</div>
-  <div class="action-bar"><button class="btn-convert" id="convertBtn" disabled>?? Convert to GIF</button></div>
-</div>
-<footer>
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <a href="../index.html" class="nav-logo" style="font-size:1.15rem;"><span class="logo-free">? FreeTools</span><span class="logo-online">Online</span></a>
+    <div class="dz-add">
+      ✅ <span id="addMoreBtn">Selected: click to change file</span>
     </div>
   </div>
-</footer>
-<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+  <input type="file" id="fileInput" accept="video/mp4,video/webm,video/quicktime" style="display:none" />
+  
+  <div class="progress-bar-wrap" id="progressWrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <div class="progress-text" id="progressText">Loading engine...</div>
+
+  <div class="action-bar" style="margin-top: 1.5rem;">
+    <button class="btn-convert" id="convertBtn" disabled>🎞️ Convert to GIF</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+<script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
+
 <script>
-  const { createFFmpeg, fetchFile } = FFmpeg;
-  const ffmpeg = createFFmpeg({ log: true });
+  const { FFmpeg } = window.FFmpeg;
+  const { fetchFile } = window.FFmpegUtil;
+  const ffmpeg = new FFmpeg();
+
   const dropZone = document.getElementById('dropZone');
   const fileInput = document.getElementById('fileInput');
   const convertBtn = document.getElementById('convertBtn');
   const statusMsg = document.getElementById('statusMsg');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressBar = document.getElementById('progressBar');
   const progressText = document.getElementById('progressText');
-  let selectedFile = null;
+  const addMoreBtn = document.getElementById('addMoreBtn');
 
-  function showStatus(msg, type) { statusMsg.textContent = msg; statusMsg.className = 'status-msg ' + type; statusMsg.style.display = 'block'; }
-  function handleFile(file) {
-    if (!file.type.startsWith('video/')) return;
-    selectedFile = file;
-    dropZone.classList.add('has-files');
-    convertBtn.disabled = false;
-    document.querySelector('.dz-add').innerHTML = '?? Selected: ' + file.name + ' - <span id="addMoreBtn2">Change</span>';
-    document.getElementById('addMoreBtn2').addEventListener('click', () => fileInput.click());
+  let currentFile = null;
+  let isReady = false;
+
+  function showStatus(msg, type) {
+    statusMsg.textContent = msg;
+    statusMsg.className = 'status-msg ' + type;
+    statusMsg.style.display = 'block';
   }
-  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-  dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); });
-  dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
-  dropZone.addEventListener('click', e => { if (e.target.tagName !== 'SPAN') fileInput.click(); });
-  fileInput.addEventListener('change', () => { if (fileInput.files.length) handleFile(fileInput.files[0]); });
-  document.getElementById('browseBtn').addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
+
+  async function init() {
+    progressWrap.style.display = 'block';
+    progressText.style.display = 'block';
+    progressText.textContent = 'Loading video engine (once per visit)...';
+    
+    ffmpeg.on('progress', ({ progress }) => {
+      const p = Math.round(progress * 100);
+      progressBar.style.width = p + '%';
+      if (p > 0 && p < 100) {
+        progressText.textContent = `Processing: ${p}%`;
+      }
+    });
+
+    try {
+      await ffmpeg.load({
+        coreURL: 'https://unpkg.com/@ffmpeg/core-st@0.12.6/dist/umd/ffmpeg-core.js',
+        wasmURL: 'https://unpkg.com/@ffmpeg/core-st@0.12.6/dist/umd/ffmpeg-core.wasm',
+      });
+      isReady = true;
+      progressWrap.style.display = 'none';
+      progressText.style.display = 'none';
+      updateUI();
+    } catch (e) {
+      showStatus('Error loading video engine: ' + e.message, 'error');
+    }
+  }
+  init();
+
+  function updateUI() {
+    if (currentFile) {
+      dropZone.classList.add('has-files');
+      addMoreBtn.textContent = `Selected: ${currentFile.name} - Change`;
+    } else {
+      dropZone.classList.remove('has-files');
+    }
+    convertBtn.disabled = !currentFile || !isReady;
+  }
+
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eName => {
+    window.addEventListener(eName, e => { e.preventDefault(); e.stopPropagation(); }, false);
+  });
+
+  dropZone.addEventListener('dragover', () => dropZone.classList.add('drag-over'));
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length) {
+      currentFile = e.dataTransfer.files[0];
+      updateUI();
+    }
+  });
+
+  dropZone.addEventListener('click', e => {
+    if (e.target.id !== 'addMoreBtn') fileInput.click();
+  });
+  document.getElementById('browseBtn').addEventListener('click', e => {
+    e.stopPropagation(); fileInput.click();
+  });
+  addMoreBtn.addEventListener('click', e => {
+    e.stopPropagation(); fileInput.click();
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) {
+      currentFile = fileInput.files[0];
+      updateUI();
+    }
+  });
 
   convertBtn.addEventListener('click', async () => {
-    if (!selectedFile) return;
+    if (!currentFile || !isReady) return;
     convertBtn.disabled = true;
+    progressWrap.style.display = 'block';
+    progressBar.style.width = '0%';
     progressText.style.display = 'block';
+    progressText.textContent = 'Converting to GIF (this takes a moment)...';
+    statusMsg.style.display = 'none';
+
     try {
-      if (!ffmpeg.isLoaded()) { progressText.innerText = 'Loading FFmpeg...'; await ffmpeg.load(); }
-      progressText.innerText = 'Converting to GIF...';
-      ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(selectedFile));
-      await ffmpeg.run('-i', 'input.mp4', '-vf', 'fps=10,scale=320:-1:flags=lanczos', '-c:v', 'gif', 'output.gif');
-      const data = ffmpeg.FS('readFile', 'output.gif');
+      const inputName = 'input' + currentFile.name.substring(currentFile.name.lastIndexOf('.'));
+      await ffmpeg.writeFile(inputName, await fetchFile(currentFile));
+      
+      const outName = 'output.gif';
+      await ffmpeg.exec(['-i', inputName, '-vf', 'fps=10,scale=320:-1:flags=lanczos', '-c:v', 'gif', outName]);
+      
+      const data = await ffmpeg.readFile(outName);
       const url = URL.createObjectURL(new Blob([data.buffer], { type: 'image/gif' }));
+      
       const a = document.createElement('a');
-      a.href = url; a.download = 'converted.gif'; a.click();
+      a.href = url;
+      a.download = currentFile.name.substring(0, currentFile.name.lastIndexOf('.')) + '.gif';
+      a.click();
+      
+      showStatus('✅ GIF created successfully!', 'success');
+    } catch (e) {
+      showStatus('❌ Processing failed: ' + e.message, 'error');
+    } finally {
+      progressWrap.style.display = 'none';
       progressText.style.display = 'none';
-      showStatus('? GIF converted successfully!', 'success');
-    } catch (err) {
-      showStatus('? Error: ' + err.message, 'error'); progressText.style.display = 'none';
-    } finally { convertBtn.disabled = false; }
+      convertBtn.disabled = false;
+    }
   });
 </script>
 </body>
