@@ -1,0 +1,259 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Barcode Generator - FreeToolsOnline</title>
+  <meta name="description" content="Generate customizable Barcodes for free. No sign-up, no server uploads — 100% in your browser." />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <style>
+    .qr-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .qr-container {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+    .qr-controls {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+    .qr-preview-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      background: var(--card-bg);
+      padding: 2rem 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .form-group label {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      color: var(--text);
+      font-size: 1rem;
+    }
+    #barcodeCanvas {
+      max-width: 100%;
+      height: auto;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+    .btn-download {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      transition: opacity 0.2s;
+      width: 100%;
+      justify-content: center;
+    }
+    .btn-download:hover { opacity: 0.9; }
+    .color-pickers {
+      display: flex;
+      gap: 1rem;
+    }
+    .color-pickers .form-group {
+      flex: 1;
+    }
+    input[type="color"] {
+      padding: 0;
+      height: 45px;
+      cursor: pointer;
+    }
+    .error-msg {
+      color: #e74c3c;
+      font-size: 0.9rem;
+      margin-top: -0.5rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="../index.html" class="nav-logo">
+    <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="../index.html#video-tools">Video Tools</a></li>
+    <li><a href="../index.html#pdf-tools">PDF Tools</a></li>
+    <li><a href="../index.html#image-tools">Image Tools</a></li>
+    <li><a href="../index.html#text-tools">Text Tools</a></li>
+  </ul>
+</nav>
+
+<div class="tool-page-hero">
+  <div class="hero-badge" style="margin-bottom:1rem;">🏪 Other Tools</div>
+  <h1>Barcode <span class="gradient-text">Generator</span></h1>
+  <p>Generate high-quality barcodes instantly — 100% free and processes locally in your browser.</p>
+</div>
+
+<div class="tool-container">
+  <div class="qr-container">
+    <div class="qr-controls">
+      
+      <div class="form-group">
+        <label for="barcodeData">Barcode Content (Text/Numbers)</label>
+        <input type="text" id="barcodeData" placeholder="e.g. 123456789012" value="FreeToolsOnline" />
+        <div id="errorMsg" class="error-msg">Invalid format for selected barcode type</div>
+      </div>
+
+      <div class="form-group">
+        <label for="barcodeFormat">Barcode Format</label>
+        <select id="barcodeFormat">
+          <option value="CODE128">CODE128 (Standard alphanumeric)</option>
+          <option value="CODE39">CODE39 (Uppercase alphanumeric)</option>
+          <option value="EAN13">EAN-13 (12 or 13 digits)</option>
+          <option value="EAN8">EAN-8 (7 or 8 digits)</option>
+          <option value="UPC">UPC (11 or 12 digits)</option>
+          <option value="ITF14">ITF-14 (13 or 14 digits)</option>
+          <option value="MSI">MSI (Digits only)</option>
+          <option value="pharmacode">Pharmacode (Digits only)</option>
+        </select>
+      </div>
+      
+      <div class="color-pickers">
+        <div class="form-group">
+          <label for="lineColor">Line Color</label>
+          <input type="color" id="lineColor" value="#000000" />
+        </div>
+        <div class="form-group">
+          <label for="bgColor">Background</label>
+          <input type="color" id="bgColor" value="#ffffff" />
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+          <input type="checkbox" id="showText" checked style="width:auto; transform:scale(1.2);" />
+          Show text below barcode
+        </label>
+      </div>
+
+    </div>
+
+    <div class="qr-preview-pane">
+      <h3 style="margin:0;">Preview</h3>
+      <canvas id="barcodeCanvas"></canvas>
+      <button id="downloadBtn" class="btn-download">💾 Download PNG</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="../index.html" class="nav-logo" style="font-size:1.15rem;">
+        <span class="logo-free">⚡ FreeTools</span><span class="logo-online">Online</span>
+      </a>
+      <p>Free, fast and privacy-friendly online tools.</p>
+    </div>
+    <div class="footer-col">
+      <h4>More Tools</h4>
+      <ul style="list-style:none; padding:0; margin:0; line-height:1.8;">
+        <li><a href="qr-generator.html" style="color:var(--text-muted); text-decoration:none;">QR Generator</a></li>
+        <li><a href="image-compressor.html" style="color:var(--text-muted); text-decoration:none;">Image Compressor</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 FreeToolsOnline. All processing is done locally in your browser.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script>
+  const barcodeData = document.getElementById('barcodeData');
+  const barcodeFormat = document.getElementById('barcodeFormat');
+  const lineColor = document.getElementById('lineColor');
+  const bgColor = document.getElementById('bgColor');
+  const showText = document.getElementById('showText');
+  const barcodeCanvas = document.getElementById('barcodeCanvas');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const errorMsg = document.getElementById('errorMsg');
+
+  function generateBarcode() {
+    let text = barcodeData.value.trim();
+    if (!text) text = "123456789012";
+
+    try {
+      errorMsg.style.display = 'none';
+      JsBarcode(barcodeCanvas, text, {
+        format: barcodeFormat.value,
+        lineColor: lineColor.value,
+        background: bgColor.value,
+        displayValue: showText.checked,
+        margin: 10,
+        width: 2,
+        height: 100
+      });
+      downloadBtn.disabled = false;
+      downloadBtn.style.opacity = '1';
+    } catch (e) {
+      errorMsg.textContent = e.message || "Invalid format for selected barcode type";
+      errorMsg.style.display = 'block';
+      
+      const ctx = barcodeCanvas.getContext('2d');
+      ctx.clearRect(0, 0, barcodeCanvas.width, barcodeCanvas.height);
+      barcodeCanvas.width = 300;
+      barcodeCanvas.height = 100;
+      
+      downloadBtn.disabled = true;
+      downloadBtn.style.opacity = '0.5';
+    }
+  }
+
+  const inputs = [barcodeData, barcodeFormat, lineColor, bgColor, showText];
+  inputs.forEach(input => {
+    input.addEventListener('input', generateBarcode);
+    input.addEventListener('change', generateBarcode);
+  });
+
+  generateBarcode();
+
+  downloadBtn.addEventListener('click', () => {
+    if (downloadBtn.disabled) return;
+    const link = document.createElement('a');
+    link.download = 'barcode.png';
+    link.href = barcodeCanvas.toDataURL('image/png');
+    link.click();
+  });
+</script>
+</body>
+</html>
