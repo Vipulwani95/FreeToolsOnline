@@ -63,13 +63,16 @@
   </div>
 </div>
 
-<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
-<script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
-
 <script>
-  const { FFmpeg } = window.FFmpeg;
-  const { fetchFile } = window.FFmpegUtil;
-  const ffmpeg = new FFmpeg();
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = () => reject(new Error('Failed to load: ' + src));
+      document.head.appendChild(s);
+    });
+  }
 
   const dropZone = document.getElementById('dropZone');
   const fileInput = document.getElementById('fileInput');
@@ -80,6 +83,8 @@
   const progressText = document.getElementById('progressText');
   const addMoreBtn = document.getElementById('addMoreBtn');
 
+  let ffmpeg = null;
+  let fetchFile = null;
   let currentFile = null;
   let isReady = false;
 
@@ -89,21 +94,49 @@
     statusMsg.style.display = 'block';
   }
 
+  async function ensureScriptsLoaded() {
+    if (!window.FFmpeg && !window.FFmpegWASM) {
+      try {
+        await loadScript('https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js');
+      } catch (e1) {
+        await loadScript('https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js');
+      }
+    }
+    if (!window.FFmpegUtil) {
+      try {
+        await loadScript('https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js');
+      } catch (e2) {
+        await loadScript('https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js');
+      }
+    }
+  }
+
   // Load FFmpeg
   async function init() {
     progressWrap.style.display = 'block';
     progressText.style.display = 'block';
     progressText.textContent = 'Loading video engine (once per visit)...';
-    
-    ffmpeg.on('progress', ({ progress }) => {
-      const p = Math.round(progress * 100);
-      progressBar.style.width = p + '%';
-      if (p > 0 && p < 100) {
-        progressText.textContent = `Processing: ${p}%`;
-      }
-    });
 
     try {
+      await ensureScriptsLoaded();
+
+      const FFmpegClass = (window.FFmpeg && window.FFmpeg.FFmpeg) || (window.FFmpegWASM && window.FFmpegWASM.FFmpeg) || window.FFmpeg;
+      fetchFile = window.FFmpegUtil ? window.FFmpegUtil.fetchFile : null;
+
+      if (!FFmpegClass || !fetchFile) {
+        throw new Error('Video processing engine could not be initialized.');
+      }
+
+      ffmpeg = new FFmpegClass();
+      
+      ffmpeg.on('progress', ({ progress }) => {
+        const p = Math.round(progress * 100);
+        progressBar.style.width = p + '%';
+        if (p > 0 && p < 100) {
+          progressText.textContent = `Processing: ${p}%`;
+        }
+      });
+
       try {
         await ffmpeg.load({
           coreURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
@@ -120,6 +153,8 @@
       progressText.style.display = 'none';
       updateUI();
     } catch (e) {
+      progressWrap.style.display = 'none';
+      progressText.style.display = 'none';
       showStatus('Error loading video engine: ' + e.message, 'error');
     }
   }
