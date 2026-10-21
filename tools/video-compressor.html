@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Video Compressor - FreeToolsOnline</title>
-  <meta name="description" content="Compress video files locally in your browser. Reduce MP4 and WebM video size without uploading to any server." />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
   <style>
@@ -115,7 +117,7 @@
 </nav>
 
 <div class="tool-page-hero">
-  <div class="hero-badge" style="margin-bottom:1rem;">🎬 Video Tool</div>
+  <div class="hero-badge" style="margin-bottom:1rem;">🎬 Video Tool (v2.1)</div>
   <h1>Video <span class="gradient-text">Compressor</span></h1>
   <p>Compress and reduce MP4, WebM videos directly in your browser without uploading to any server.</p>
 </div>
@@ -365,7 +367,10 @@
     } catch (e) {
       progressWrap.style.display = 'none';
       progressText.style.display = 'none';
-      showStatus('Error loading video engine: ' + e.message, 'error');
+      console.error('Engine error:', e);
+      statusMsg.innerHTML = `⚠️ <strong>Video Engine Error:</strong> ${e.message}<br><button onclick="location.reload(true)" style="margin-top:8px;padding:6px 14px;background:var(--primary);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:0.85rem;">🔄 Reload Page (Clear Cache)</button>`;
+      statusMsg.className = 'status-msg error';
+      statusMsg.style.display = 'block';
     }
   }
 
